@@ -1,0 +1,186 @@
+<!doctype html>
+
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cellular Automata</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            min-height: 100vh;
+
+            background: #17191d;
+            color: #eeeeee;
+
+            font-family:
+                system-ui,
+                sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app {
+            width: min(1100px, 95vw);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-bottom: 12px;
+        }
+
+        button {
+            padding: 8px 14px;
+
+            border: 1px solid #444;
+            border-radius: 6px;
+
+            background: #252930;
+            color: #eeeeee;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #30343c;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+
+            overflow: hidden;
+
+            border:
+                1px solid #363a42;
+
+            border-radius: 8px;
+
+            background: #0f1115;
+        }
+
+        canvas {
+            display: block;
+
+            width: 100%;
+            height: auto;
+
+            /*
+             * Для клеточных автоматов хочется
+             * именно резкого масштабирования.
+             */
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .info {
+            display: flex;
+            gap: 24px;
+
+            margin-top: 10px;
+
+            color: #999999;
+            font-size: 14px;
+        }
+
+        .info strong {
+            color: #eeeeee;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <main class="app">
+
+        <div class="toolbar">
+
+            <button id="life">
+                Игра жизнь
+            </button>
+
+            <button id="sand">
+                Песок
+            </button>
+            <button id="sand-pile">
+                Песок на плоскость
+            </button>
+            
+            <button id="forest">
+                Горящий лес
+            </button>
+
+            <span style="width: 16px"></span>
+
+            <button id="start">
+                Старт
+            </button>
+
+            <button id="pause">
+                Пауза
+            </button>
+
+            <button id="step">
+                Шаг
+            </button>
+
+            <button id="reset">
+                Сброс
+            </button>
+
+        </div>
+
+
+        <div class="canvas-wrapper">
+
+            <canvas id="canvas"></canvas>
+
+        </div>
+
+
+        <div class="info">
+
+            <span>
+                Состояние:
+                <strong id="status">
+                    пауза
+                </strong>
+            </span>
+
+            <span>
+                Итерация:
+                <strong id="iteration">
+                    0
+                </strong>
+            </span>
+
+        </div>
+
+    </main>
+
+
+    <script
+        type="module"
+        src="./main.js"
+    ></script>
+
+</body>
+
+</html>
