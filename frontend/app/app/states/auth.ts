@@ -30,8 +30,6 @@ export class AuthenticationManager {
         
         const request = new APIMethodMe();
         const response:APIMethodDataResponse<User> = await request.execute()
-        console.log(response)
-        console.log(this.state)
         
         if (response.ok) {
             this.state = new AuthenticationState(

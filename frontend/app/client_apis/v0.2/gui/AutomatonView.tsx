@@ -51,16 +51,19 @@ export default function AutomatonView() {
             </CardContent>
           </Card>
 
-          <ControlPanel
-            isRunning={engine.isRunning}
-            iteration={engine.iteration}
-            onStart={engine.start}
-            onPause={engine.pause}
-            onStep={engine.step}
-            onReset={engine.reset}
-            onSpeedChange={engine.setSpeed}
-            onRenderIntervalChange={engine.setRenderEveryN}
-          />
+          
+        <ControlPanel
+          isRunning={engine.isRunning}
+          iteration={engine.iteration}
+          speed={engine.speed}
+          renderEveryN={engine.renderEveryN}
+          onStart={engine.start}
+          onPause={engine.pause}
+          onStep={engine.step}
+          onReset={engine.reset}
+          onSpeedChange={engine.setSpeed}
+          onRenderIntervalChange={engine.setRenderEveryN}
+        />
         </div>
 
         {/* Правая колонка */}

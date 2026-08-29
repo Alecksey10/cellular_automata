@@ -3,17 +3,21 @@ import {
   Links,
   Meta,
   Outlet,
+  Routes,
   Scripts,
   ScrollRestoration,
 } from "react-router";
 
+import Sidebar from '~/components/ui/sidebar/Sidebar'
+
 import { AuthenticationManager, authenticationManager, AuthenticationState } from "./states/auth";
 
-import type { Route } from "./+types/root";
+import type { Route as RouteType}  from "./+types/root";
+import { Route } from "react-router";
 import "./app.css";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-export const links: Route.LinksFunction = () => [
+export const links: RouteType.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -49,30 +53,83 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const [partReducer, setReducer] = useState(authenticationManager.getState()); //по идее должен быть какой-нибудь прокси на состояния, чтобы я его редактировал
-  useEffect(()=>
-  {
-    let ignore = false;
-    async function startFetching()
-    {
-      await authenticationManager.synchronize();
-      if(!ignore)
-      {
-        setReducer(authenticationManager.getState())
-      }
-    }
+  // const [partReducer, setReducer] = useState(authenticationManager.getState()); //по идее должен быть какой-нибудь прокси на состояния, чтобы я его редактировал
+  // useEffect(()=>
+  // {
+  //   console.log('start fetching')
+  //   let ignore = false;
+  //   async function startFetching()
+  //   {
+  //     await authenticationManager.synchronize();
+  //     if(!ignore)
+  //     {
+  //       setReducer(authenticationManager.getState())
+  //       console.log("reducer auth updated", authenticationManager.getState())
+  //     }
+  //   }
     
-    startFetching()
-    return ()=>{ignore = true}
-  },[])
-  console.log('start rendering')
-  console.log(authenticationManager.getState())
-  return <AuthContext value={partReducer}>
-    <Outlet />;
-  </AuthContext>
+  //   startFetching()
+  //   return ()=>{ignore = true}
+  // },[])
+  // console.log('start rendering')
+  // console.log(authenticationManager.getState())
+
+
+  //  // ─── Формируем меню в зависимости от авторизации ───
+  // const menuItems :{to:string, icon:string, label:string}[]= useMemo(() => {
+  //   const base = [
+  //     { to: '/create_automata', icon: '/icons/home.svg', label: 'Создать автомат' },
+  //     { to: '/search_by_tags', icon: '/icons/users.svg', label: 'Поиск по автоматам' },
+  //     { to: '/settings', icon: '/icons/settings.svg', label: 'Настройки' },
+  //   ];
+
+  //   // Добавляем профиль ТОЛЬКО если пользователь авторизован
+  //   if (partReducer.isAuth) {
+  //     base.unshift({
+  //       to: '/profile',
+  //       icon: '/icons/profile.svg',
+  //       label: 'Профиль',
+  //     });
+  //   }
+  //   else
+  //   {
+  //     // Добавляем профиль ТОЛЬКО если пользователь авторизован
+  //   if (partReducer.isAuth) {
+  //     base.unshift({
+  //       to: '/test_r2',
+  //       icon: '/icons/profile.svg',
+  //       label: 'Авторизоваться',
+  //     });
+  //   }
+  //   }
+
+  //   // // Можно добавить роль-зависимые пункты
+  //   // if (partReducer.role === 'admin') {
+  //   //   base.push({
+  //   //     to: '/admin',
+  //   //     icon: '/icons/shield.svg',
+  //   //     label: 'Админ-панель',
+  //   //   });
+  //   // }
+
+  //   return base;
+  // }, [partReducer]);
+
+  // console.log("root rendering", partReducer)
+  return <div >
+        <Outlet/>
+        </div>
+  // return <AuthContext value={partReducer}>
+  //     <div style={{ display: 'flex', minHeight: '100vh' }}>
+  //       <Sidebar items={menuItems}/>
+  //       <div style={{ width:'100%'}}>
+  //       <Outlet/>
+  //       </div>
+  //     </div>
+  // </AuthContext>
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: RouteType.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;

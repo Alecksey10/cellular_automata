@@ -43,7 +43,7 @@ export class SimulationRuntime {
         };
 
         this.runtimeConfig = {
-            stepsPerRender: 1000,
+            stepsPerRender: 1,
             ...options.runtime,
         };
 

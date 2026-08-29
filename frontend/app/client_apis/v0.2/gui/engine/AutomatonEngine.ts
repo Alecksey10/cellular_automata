@@ -14,6 +14,8 @@ export interface EngineCallbacks {
   onSchemaChanged?: (schema: ConfigSchema) => void;
   /** Вызывается при смене состояния play/pause */
   onRunningChanged: (isRunning: boolean) => void;
+  onSpeedChanged: (speed: number) => void;
+  onRenderEveryNChanged: (n: number) => void;
 }
 
 /**
@@ -57,6 +59,14 @@ export class AutomatonEngine {
 
     this.eventBus.on("runtime:state", () => {
       callbacks.onRunningChanged(this.runtime.isRunning);
+    });
+
+    this.eventBus.on("runtime:speed", (speed) => {
+      callbacks.onSpeedChanged(speed as number);
+    });
+
+    this.eventBus.on("runtime:render-every-n", (n) => {
+      callbacks.onRenderEveryNChanged(n as number);
     });
   }
 

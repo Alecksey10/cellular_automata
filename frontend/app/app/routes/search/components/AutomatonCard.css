@@ -1,0 +1,337 @@
+.automaton-card {
+  --radius: 14px;
+  --content-padding: 16px;
+
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  border-radius: var(--radius);
+
+  background: #171717;
+  color: #fff;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.automaton-card--rectangle {
+  aspect-ratio: 4 / 3;
+}
+
+.automaton-card--clickable {
+  cursor: pointer;
+}
+
+.automaton-card:hover {
+  z-index: 2;
+
+  transform: scale(1.325);
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ==================================================
+   IMAGE
+   ================================================== */
+
+.automaton-card__media {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  border-radius: inherit;
+}
+
+.automaton-card__image,
+.automaton-card__placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  border-radius: inherit;
+}
+
+.automaton-card__image {
+  object-fit: cover;
+
+  transition:
+    transform 250ms ease;
+}
+
+.automaton-card:hover .automaton-card__image {
+  transform: scale(1.04);
+}
+
+.automaton-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #252525,
+      #141414
+    );
+
+  color: rgba(255, 255, 255, 0.45);
+
+  font-size: 13px;
+}
+
+
+/* ==================================================
+   IMAGE GRADIENT
+   ================================================== */
+
+.automaton-card__overlay {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      to bottom,
+
+      rgba(0, 0, 0, 0.08) 0%,
+
+      transparent 35%,
+
+      rgba(0, 0, 0, 0.15) 55%,
+
+      rgba(0, 0, 0, 0.90) 100%
+    );
+}
+
+
+/* ==================================================
+   CONTENT
+   ================================================== */
+
+/*
+ * ВАЖНО:
+ *
+ * Контент НЕ растягивается на всю карточку.
+ *
+ * Он всегда находится внизу.
+ */
+.automaton-card__content {
+  position: absolute;
+
+  left: var(--content-padding);
+  right: var(--content-padding);
+  bottom: var(--content-padding);
+
+  z-index: 2;
+
+  box-sizing: border-box;
+
+  /*
+   * Никаких flex-grow / justify-content.
+   * Высота определяется содержимым.
+   */
+}
+
+
+/* ==================================================
+   TITLE
+   ================================================== */
+
+.automaton-card__title {
+  display: block;
+
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  color: #fff;
+
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 600;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   DETAILS
+   ================================================== */
+
+.automaton-card__details {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-top: 9px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  /*
+   * В обычном состоянии детали полностью скрыты.
+   */
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  transform: translateY(20px);
+
+  transition:
+    max-height 220ms ease,
+    opacity 160ms ease,
+    transform 180ms ease;
+}
+
+
+/*
+ * При наведении детали раскрываются ВВЕРХ,
+ * начиная от title.
+ */
+.automaton-card:hover .automaton-card__details {
+  max-height: 180px;
+
+  opacity: 1;
+
+  transform: translateY(0);
+}
+
+
+/* ==================================================
+   DESCRIPTION
+   ================================================== */
+
+.automaton-card__description {
+  width: 100%;
+
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.78);
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   SLUG
+   ================================================== */
+
+.automaton-card__slug {
+  width: 100%;
+
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.48);
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+  line-height: 1.3;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   TAGS
+   ================================================== */
+
+.automaton-card__tags {
+  width: 100%;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  max-height: 40px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+.automaton-card__tag {
+  display: block;
+
+  max-width: 100%;
+
+  padding: 3px 7px;
+
+  box-sizing: border-box;
+
+  border-radius: 5px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: rgba(255, 255, 255, 0.75);
+
+  font-size: 10px;
+  line-height: 1.3;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* ==================================================
+   ACCESSIBILITY
+   ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .automaton-card,
+  .automaton-card__image,
+  .automaton-card__details {
+    transition: none;
+  }
+}

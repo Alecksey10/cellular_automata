@@ -1,0 +1,38 @@
+.automaton-card-scroller {
+  width: 100%;
+  height: 100%;
+
+  /*
+   * Именно контейнер отвечает за прокрутку.
+   */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /*
+   * Чтобы карточки не прилипали к краям
+   * и hover-scale не обрезался.
+   */
+  padding: 4px;
+
+  box-sizing: border-box;
+}
+
+.automaton-card-scroller__grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      var(--automaton-card-columns),
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+
+  /*
+   * Небольшой запас снизу, чтобы последняя карточка
+   * нормально увеличивалась при hover.
+   */
+  padding: 4px 4px 20px;
+
+  box-sizing: border-box;
+}

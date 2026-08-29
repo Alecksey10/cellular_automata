@@ -3,7 +3,7 @@ import { APIMethodBase } from "../APIMethodBase";
 import { APIMethodDataResponse } from "../APIMethodDataResponse";
 import { APIMethodResponseBase } from "../APIMethodResponseBase";
 import { AUTOMATA_ENDPOINTS } from "./enpoints";
-import type { AutomatonSourceCode } from "./types";
+import type { AutomatonSourceCode, AutomatonGetResponse } from "./types";
 
 
 export interface AutomataSourceRequest {
@@ -11,7 +11,7 @@ export interface AutomataSourceRequest {
 }
 
 
-export class APIMethodGetAutomataByID extends APIMethodBase<APIMethodDataResponse<AutomatonSourceCode>>
+export class APIMethodGetAutomataSourceByID extends APIMethodBase<APIMethodDataResponse<AutomatonSourceCode>>
 {
     
         async execute(
@@ -19,7 +19,7 @@ export class APIMethodGetAutomataByID extends APIMethodBase<APIMethodDataRespons
         ): Promise<APIMethodDataResponse<AutomatonSourceCode>> {
     
             return this.request(
-                AUTOMATA_ENDPOINTS.automata(request.automataID),
+                AUTOMATA_ENDPOINTS.automata_source(request.automataID),
                 {
                     method: "GET"
                 },
@@ -48,4 +48,48 @@ export class APIMethodGetAutomataByID extends APIMethodBase<APIMethodDataRespons
                 data as AutomatonSourceCode,
             );
         }
+}
+
+export interface AutomataRequest {
+    automataID: string;
+}
+
+
+export class APIMethodGetAutomataByID
+    extends APIMethodBase<APIMethodDataResponse<AutomatonGetResponse>>
+{
+    async execute(
+        request: AutomataRequest,
+    ): Promise<APIMethodDataResponse<AutomatonGetResponse>> {
+
+        return this.request(
+            AUTOMATA_ENDPOINTS.automata_by_id(request.automataID),
+            {
+                method: "GET",
+            },
+        );
+    }
+
+
+    protected createResponse(
+        response: Response,
+        data: unknown,
+    ): APIMethodDataResponse<AutomatonGetResponse> {
+
+        if (!response.ok) {
+            return new APIMethodDataResponse<AutomatonGetResponse>(
+                response,
+                undefined,
+                this.createError(
+                    response,
+                    data,
+                ),
+            );
+        }
+
+        return new APIMethodDataResponse(
+            response,
+            data as AutomatonGetResponse,
+        );
+    }
 }

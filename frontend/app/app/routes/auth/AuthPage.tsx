@@ -16,10 +16,11 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 import { AuthContext } from "~/root";
+import type { AuthenticationState } from "~/states/auth";
 
 export default function RegisterPage()
 {
-  const authed = useContext(AuthContext)
+  const authed:AuthenticationState|null = useContext(AuthContext)
   console.log("authed is changed?")
   function handleRegistered(response:APIMethodDataResponse<RegisterResponse>) {
     if(!response.ok)

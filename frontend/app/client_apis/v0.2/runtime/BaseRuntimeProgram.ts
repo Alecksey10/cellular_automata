@@ -132,6 +132,8 @@ export abstract class BaseRuntimeProgram {
 
   setRenderEveryN(n: number): void {
     this.params.renderEveryN = Math.max(1, n);
+    
+    this.eventBus.emit("runtime:render-every-n", this.params.renderEveryN);
   }
 
   get isRunning(): boolean {

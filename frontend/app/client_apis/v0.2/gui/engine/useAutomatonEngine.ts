@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { AutomatonEngine } from "./AutomatonEngine";
-import { APIMethodGetAutomataByID,type AutomataSourceRequest } from "../../../../api/automata/APIMethodGetAutomataByID";
+import { APIMethodGetAutomataSourceByID,type AutomataSourceRequest } from "../../../../api/automata/APIMethodGetAutomataByID";
 import { loadProgram } from "~/../program_loader/ProgramLoader";
 import type { IAutomaton } from "../../contract/IAutomaton";
 import type { ConfigSchema } from "../../contract/types/config";
@@ -9,12 +9,16 @@ export function useAutomatonEngine(automatonId: string) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<AutomatonEngine | null>(null);
 
-  // Стейты для программы и GUI
   const [program, setProgram] = useState<IAutomaton | null>(null);
   const [schema, setSchema] = useState<ConfigSchema | null>(null);
   const [params, setParams] = useState<Record<string, unknown>>({});
   const [iteration, setIteration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  
+  // Добавляем новые стейты для синхронизации ползунков
+  const [speed, setSpeed] = useState(1);
+  const [renderEveryN, setRenderEveryN] = useState(1);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +33,7 @@ export function useAutomatonEngine(automatonId: string) {
 
     async function fetchAndCompile() {
       try {
-        const method = new APIMethodGetAutomataByID();
+        const method = new APIMethodGetAutomataSourceByID();
         const response = await method.execute({ automataID: automatonId } as AutomataSourceRequest);
 
         if (!response.ok) {
@@ -68,10 +72,10 @@ export function useAutomatonEngine(automatonId: string) {
   // ─────────────────────────────────────────────────────────────────────────
   // ЭТАП 2: Инициализация движка (когда программа загружена И canvas в DOM)
   // ─────────────────────────────────────────────────────────────────────────
+  // Обновляем второй useEffect (инициализацию движка)
   useEffect(() => {
     if (!program || !canvasRef.current) return;
 
-    // Создаем движок симуляции
     const engine = new AutomatonEngine(
       program,
       canvasRef.current,
@@ -80,14 +84,19 @@ export function useAutomatonEngine(automatonId: string) {
         onConfigChanged: (newParams) => setParams(newParams),
         onSchemaChanged: (newSchema) => setSchema(newSchema),
         onRunningChanged: (running) => setIsRunning(running),
+        
+        // Синхронизируем стейт React с вызовами из автомата
+        onSpeedChanged: (s) => setSpeed(s),
+        onRenderEveryNChanged: (n) => setRenderEveryN(n),
       }
     );
 
     engineRef.current = engine;
     setIsRunning(false);
     setIteration(0);
+    setSpeed(1);         // Сброс на дефолт
+    setRenderEveryN(1);  // Сброс на дефолт
 
-    // Автозапуск симуляции
     engine.start();
 
     return () => {
@@ -114,13 +123,13 @@ export function useAutomatonEngine(automatonId: string) {
     engineRef.current?.runAction(actionId);
   }, []);
 
-  const setSpeed = useCallback((speed: number) => {
-    engineRef.current?.setSpeed(speed);
-  }, []);
+  // const setSpeed = useCallback((speed: number) => {
+  //   engineRef.current?.setSpeed(speed);
+  // }, []);
 
-  const setRenderEveryN = useCallback((n: number) => {
-    engineRef.current?.setRenderEveryN(n);
-  }, []);
+  // const setRenderEveryN = useCallback((n: number) => {
+  //   engineRef.current?.setRenderEveryN(n);
+  // }, []);
 
   return {
     canvasRef,
@@ -128,6 +137,8 @@ export function useAutomatonEngine(automatonId: string) {
     params,
     iteration,
     isRunning,
+    speed,
+    renderEveryN,
     loading,
     error,
     eventBus: engineRef.current?.eventBus ?? null,

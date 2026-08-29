@@ -4,6 +4,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
     Response,
     status,
 )
@@ -19,9 +20,11 @@ from app.models.user import User
 from app.schemas.automaton import (
     AutomatonCreateRequest,
     AutomatonResponse,
+    AutomatonSearchResponse,
     AutomatonSourceResponse,
     AutomatonUpdateRequest,
 )
+from app.schemas.other import SearchOwner, SearchSort
 from app.services.automaton import (
     calculate_source_metadata,
 )
@@ -31,6 +34,63 @@ router = APIRouter(
     prefix="/automata",
     tags=["automata"],
 )
+
+
+@router.get(
+    "/search_by_tags",
+    response_model=AutomatonSearchResponse,
+)
+async def search_automata(
+    text: str | None = Query(
+        default=None,
+    ),
+    tags: list[UUID] = Query(
+        default=[],
+    ),
+    collections: list[UUID] = Query(
+        default=[],
+    ),
+    owner: SearchOwner = Query(
+        default=SearchOwner.ANY,
+    ),
+    sort: SearchSort = Query(
+        default=SearchSort.DATE,
+    ),
+    page: int = Query(
+        default=1,
+        ge=1,
+    ),
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    page_size = 40
+    offset = (page - 1) * page_size
+
+    owner_id = None
+
+    if owner == SearchOwner.ME:
+        owner_id = current_user.id
+
+    dao = AutomatonDAO(session)
+
+    total, items = await dao.search(
+        text=text,
+        tag_ids=tags,
+        collection_ids=collections,
+        owner_id=owner_id,
+        sort=sort,
+        offset=offset,
+        limit=page_size,
+    )
+
+    return AutomatonSearchResponse(
+        total=total,
+        page=page,
+        page_size=page_size,
+        items=items,
+    )
+
+
 
 @router.get(
     "/{automaton_id}",
@@ -80,7 +140,7 @@ async def get_automaton_source(
     )
 
 @router.post(
-    "",
+    "/create",
     response_model=AutomatonResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -262,7 +322,7 @@ async def update_automaton(
 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Automaton with this slug already exists",
+            detail="Automaton with this some data already exists",
         )
 
     await session.refresh(

@@ -1,0 +1,144 @@
+.create-automata {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 40px 24px;
+  background: #f5f7fa;
+}
+
+.create-automata__container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+
+.create-automata__header {
+  margin-bottom: 28px;
+}
+
+.create-automata__title {
+  margin: 0;
+  color: #1f2937;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.create-automata__subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* ---------- Cards ---------- */
+
+.create-automata__card {
+  margin-bottom: 24px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.create-automata__card-header {
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.create-automata__card-title {
+  margin: 0;
+  color: #374151;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.create-automata__card-description {
+  margin: 6px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ---------- Tags ---------- */
+
+.create-automata__tags {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.create-automata__tag-group {
+  min-height: 160px;
+  padding: 18px;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.create-automata__tag-group--selected {
+  background: #f8fbff;
+  border-color: #bfdbfe;
+}
+
+.create-automata__tag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.create-automata__tag-title {
+  margin: 0;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.create-automata__tag-title--selected {
+  color: #1e40af;
+}
+
+.create-automata__tag-count {
+  padding: 3px 8px;
+  color: #6b7280;
+  background: #e5e7eb;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.create-automata__tag-count--selected {
+  color: #2563eb;
+  background: #dbeafe;
+}
+
+/* ---------- Submit ---------- */
+
+.create-automata__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 4px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 700px) {
+  .create-automata {
+    padding: 24px 16px;
+  }
+
+  .create-automata__title {
+    font-size: 26px;
+  }
+
+  .create-automata__card {
+    padding: 20px;
+  }
+
+  .create-automata__tags {
+    grid-template-columns: 1fr;
+  }
+}

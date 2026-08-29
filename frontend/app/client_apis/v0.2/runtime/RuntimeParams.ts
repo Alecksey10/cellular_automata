@@ -27,8 +27,8 @@ export class RuntimeParams {
   maxIterationsPerFrame = 100;
 
   /** Размеры сетки по умолчанию (если автомат не переопределяет) */
-  defaultGridWidth = 100;
-  defaultGridHeight = 100;
+  defaultGridWidth = 80;
+  defaultGridHeight = 80;
 
   /** Обновить параметры из частичного объекта */
   apply(patch: Partial<RuntimeParams>): void {

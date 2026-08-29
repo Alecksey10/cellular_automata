@@ -1,0 +1,181 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  gap: 6px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   ARROWS
+   ========================================= */
+
+.pagination__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #444;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.pagination__arrow:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
+  color: #111;
+}
+
+.pagination__arrow:disabled {
+  color: #bbb;
+  opacity: 1;
+  cursor: default;
+}
+
+
+/* =========================================
+   PAGES
+   ========================================= */
+
+.pagination__pages {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  min-width: 0;
+}
+
+
+/* =========================================
+   PAGE BUTTON
+   ========================================= */
+
+.pagination__page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #444;
+
+  font-size: 13px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.pagination__page:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #111;
+}
+
+
+/* =========================================
+   ACTIVE PAGE
+   ========================================= */
+
+.pagination__page--active {
+  background: #e8e8e8;
+  color: #111;
+
+  font-weight: 600;
+}
+
+.pagination__page--active:hover {
+  background: #dedede;
+}
+
+
+/* =========================================
+   DOTS
+   ========================================= */
+
+.pagination__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  color: #999;
+
+  font-size: 13px;
+
+  user-select: none;
+}
+
+
+/* =========================================
+   FOCUS
+   ========================================= */
+
+.pagination__page:focus-visible,
+.pagination__arrow:focus-visible {
+  outline: 2px solid #777;
+  outline-offset: 2px;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+  .pagination {
+    gap: 2px;
+  }
+
+  .pagination__pages {
+    gap: 2px;
+  }
+
+  .pagination__page,
+  .pagination__arrow {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pagination__dots {
+    width: 18px;
+    height: 32px;
+  }
+}

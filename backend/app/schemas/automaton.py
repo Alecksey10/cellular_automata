@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.other import SearchOwner, SearchSort
 from app.schemas.tag import TagShortResponse
 from app.schemas.user import UserShortResponse
 
@@ -84,3 +85,42 @@ class AutomatonUpdateRequest(BaseModel):
     based_on_id: UUID | None = None
 
     tag_ids: list[UUID] | None = None
+
+
+from enum import StrEnum
+from uuid import UUID
+
+from pydantic import BaseModel, Field
+
+
+class AutomatonSearchParams(BaseModel):
+    text: str | None = None
+
+    tags: list[UUID] = Field(
+        default_factory=list,
+    )
+
+    collections: list[UUID] = Field(
+        default_factory=list,
+    )
+
+    owner: SearchOwner = SearchOwner.ANY
+
+    sort: SearchSort = SearchSort.DATE
+
+    page: int = Field(
+        default=1,
+        ge=1,
+    )
+
+    page_size: int = Field(
+        default=40,
+        ge=1,
+        le=40,
+    )
+
+class AutomatonSearchResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: list[AutomatonResponse]

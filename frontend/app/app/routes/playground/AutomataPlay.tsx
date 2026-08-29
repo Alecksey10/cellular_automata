@@ -21,7 +21,7 @@ import type {
     RenderData,
 } from "~/../client_apis/v0.1";
 import { loadProgram } from "../../../program_loader/ProgramLoader";
-import { APIMethodGetAutomataByID, type AutomataSourceRequest } from "../../../api/automata/APIMethodGetAutomataByID";
+import { APIMethodGetAutomataSourceByID, type AutomataSourceRequest } from "../../../api/automata/APIMethodGetAutomataByID";
 // import {programa} from "~/../client_apis/v0.1/example/ForestFire"
 // const response =
 //     await fetch("/api/simulation/forest-fire");
@@ -57,7 +57,7 @@ export default function Example() {
         let runtime:SimulationRuntime|null = forestRuntimeRef.current;
         let ignore = false;
         async function start() {
-            const method = new APIMethodGetAutomataByID()
+            const method = new APIMethodGetAutomataSourceByID()
             const response = await method.execute({automataID:automatonId} as AutomataSourceRequest);
                 
             if (!response.ok) {

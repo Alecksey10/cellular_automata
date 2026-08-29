@@ -3,6 +3,7 @@ export default class GameOfLife {
   next = new Uint8Array(0);
   width = 0;
   height = 0;
+  runtime:any = null;
   config = {
     density: 0.3,
     wrapEdges: true,
@@ -81,6 +82,7 @@ export default class GameOfLife {
   }
 
   init(ctx) {
+    this.runtime = ctx.runtime;
     this.width = ctx.gridWidth;
     this.height = ctx.gridHeight;
     this.grid = new Uint8Array(this.width * this.height);
@@ -131,7 +133,12 @@ export default class GameOfLife {
       // Корабли
       case "glider":       this.clearAndPlace(this.patternGlider()); break;
       case "lwss":         this.clearAndPlace(this.patternLWSS()); break;
-      case "mwss":         this.clearAndPlace(this.patternMWSS()); break;
+      case "mwss":         
+      {
+        this.clearAndPlace(this.patternMWSS());
+        this.runtime?.requestRenderIntervalChange(1)     
+        break;   
+      }
 
       // Паттерны роста
       case "rPentomino":   this.clearAndPlace(this.patternRPentomino()); break;

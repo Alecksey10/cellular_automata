@@ -9,6 +9,8 @@ import { useState } from "react";
 interface Props {
   isRunning: boolean;
   iteration: number;
+  speed: number;             // <-- Получаем значение скорости сверху
+  renderEveryN: number;      // <-- Получаем интервал рендеринга сверху
   onStart: () => void;
   onPause: () => void;
   onStep: () => void;
@@ -20,6 +22,8 @@ interface Props {
 export function ControlPanel({
   isRunning,
   iteration,
+  speed,
+  renderEveryN,
   onStart,
   onPause,
   onStep,
@@ -27,8 +31,6 @@ export function ControlPanel({
   onSpeedChange,
   onRenderIntervalChange,
 }: Props) {
-  const [speed, setSpeed] = useState(1);
-  const [renderEveryN, setRenderEveryN] = useState(1);
 
   const extractValue = (val: number | readonly number[]): number => {
     if (typeof val === "number") return val;
@@ -37,18 +39,6 @@ export function ControlPanel({
       if (typeof first === "number") return first;
     }
     return 1;
-  };
-
-  const handleSpeedChange = (val: number | readonly number[]) => {
-    const v = extractValue(val);
-    setSpeed(v);
-    onSpeedChange(v);
-  };
-
-  const handleRenderIntervalChange = (val: number | readonly number[]) => {
-    const v = extractValue(val);
-    setRenderEveryN(v);
-    onRenderIntervalChange(v);
   };
 
   return (
@@ -90,11 +80,11 @@ export function ControlPanel({
             </span>
           </div>
           <Slider
-            value={[speed]}
+            value={[speed]} // Значение строго привязано к props
             min={0.1}
             max={5}
             step={0.1}
-            onValueChange={handleSpeedChange}
+            onValueChange={(val) => onSpeedChange(extractValue(val))}
           />
         </div>
 
@@ -107,11 +97,11 @@ export function ControlPanel({
             </span>
           </div>
           <Slider
-            value={[renderEveryN]}
+            value={[renderEveryN]} // Значение строго привязано к props
             min={1}
             max={50}
             step={1}
-            onValueChange={handleRenderIntervalChange}
+            onValueChange={(val) => onRenderIntervalChange(extractValue(val))}
           />
         </div>
       </CardContent>
