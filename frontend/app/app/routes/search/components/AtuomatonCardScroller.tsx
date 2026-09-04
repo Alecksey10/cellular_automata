@@ -26,17 +26,17 @@ export type AutomatonCardScrollerProps = {
    */
   onCardClick?: (
     item: AutomatonCardItem,
-    index: number
+    id: string
   ) => void;
 
   onCardHover?: (
     item: AutomatonCardItem,
-    index: number
+    id: string
   ) => void;
 
   onCardUnHover?: (
     item: AutomatonCardItem,
-    index: number
+    id: string
   ) => void;
 
   className?: string;
@@ -65,21 +65,21 @@ export function AutomatonCardScroller({
       <div className="automaton-card-scroller__grid">
         {items.map((item, index) => (
           <AutomatonCard
-            key={item.slug ?? index}
+            key={item.id_val}
             {...item}
             onClick={
               onCardClick
-                ? () => onCardClick(item, index)
+                ? () => onCardClick(item, item.id_val)
                 : undefined
             }
             onHover={
               onCardHover
-                ? () => onCardHover(item, index)
+                ? () => onCardHover(item, item.id_val)
                 : undefined
             }
             onUnHover={
               onCardUnHover
-                ? () => onCardUnHover(item, index)
+                ? () => onCardUnHover(item, item.id_val)
                 : undefined
             }
           />

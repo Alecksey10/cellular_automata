@@ -228,7 +228,7 @@
 //     );
 // }
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { SearchEnvironment, type SearchEnvironmentOptions } from "./search/SearchEnvironment";
 import { MockSearchDataProvider } from "./search/data/MockSearchDataProvider";
@@ -245,38 +245,47 @@ import type {
     SearchValidation,
 } from "./search/SearchTypes";
 import { AutomatonCard } from "./components/AutomatonCard";
-import { AutomatonCardScroller } from "./components/AtuomatonCardScroller";
+import { AutomatonCardScroller, type AutomatonCardItem } from "./components/AtuomatonCardScroller";
 import { Pagination } from "./components/Pagination";
 import { buildAutomataSearchUrl } from "./search/convertation/QueryConvertation";
 import { tagsAPI } from "../../../api/tags";
 import type { Route } from "./+types/AutomataSearch";
 import { provider, SingleTon } from "./search/data/MockTaggedSearchDataProvider";
+import { automataAPI } from "../../../api/automata";
+import type { AutomatonSearchRequest } from "../../../api/automata/types";
+import { useNavigate } from "react-router";
 
 
-export async function clientLoader({params}:Route.ClientLoaderArgs) {
-//   let tags = await tagsAPI.getTags.execute();
-//   return tags.data
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+    //   let tags = await tagsAPI.getTags.execute();
+    //   return tags.data
     await provider.initialize();
     console.warn("la provider in loader", provider)
     return provider.getInstance()
 }
 
-export default function SearchTestPage({loaderData}:Route.ComponentProps) {
-    
+export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
+    const navigate = useNavigate();
     const engine =
         useMemo(
             () => {
                 let result = new SearchEnvironment(
                     loaderData as unknown as MockSearchDataProvider,
-                    { initialValue: "tag:" } as SearchEnvironmentOptions
+                    { initialValue: "" } as SearchEnvironmentOptions
                 );
                 return result;
             }, []);
 
-        
+
     const [lastQuery, setLastQuery] =
-        useState<SearchQuery | null>(
-            null,
+        useState<SearchQuery>(
+            {
+                text: "",
+                tags: [],
+                collections: [],
+                owner: "any",
+                sort: "popular",
+            } as SearchQuery,
         );
 
 
@@ -284,28 +293,96 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
         useState<SearchValidation | null>(
             null,
         );
-
-    const mock_automata = [
-        {
-            name: "Conway's Game of Life",
-            slug: "game-of-life",
-            imageUrl: "/static/life.png",
-            description: "Classic cellular automaton.",
-            tags: ["classic", "2D"],
-            aspect: "square" as const,
-        },
-        {
-            name: "Langton's Ant",
-            slug: "langtons-ant",
-            imageUrl: "/static/ant.png",
-            description: "A simple but surprisingly complex automaton.",
-            tags: ["ant", "2D"],
-            aspect: "rectangle" as const,
-        }
-    ];
-
     let [currentPage, setCurrentPage] = useState(1);
-    let [totalPages, stp] = useState(25);
+    let [totalPages, setTotalPages] = useState(1);
+
+    // есть текущие автоматы, изменяем их только при:
+    // 1) подтверждении на смену запроса
+    // 2) смену номера странички
+    // при этом на каждое подобное действие происходит запрос на сервер для получения данных об автоматах
+
+    let [automatasData, setAutomatasData] = useState<AutomatonCardItem[]>([])
+    
+    async function updateAutomatas(ignoreObject:{ignore:boolean})
+    {
+        const response = await automataAPI.searchAutomata.execute({
+                text: lastQuery.text,
+                tags: lastQuery.tags?.map(tag => tag.id),
+                collections: lastQuery.collections.map(collection => collection.id),
+                owner: lastQuery.owner,
+                sort: lastQuery.sort,
+                page: currentPage,
+            } as AutomatonSearchRequest
+            );
+            if (ignoreObject.ignore) {
+                return
+            }
+            if (!response.ok) {
+                console.error("ошибка поиска автоматов", response.status, response.error)
+                return
+            }
+
+            let items = (response.data!.items.map(item => {
+                return {
+                    name: item.name,
+                    description: item.description,
+                    slug: item.slug,
+                    tags: item.tags?.map(tag => tag.name),
+                    id_val: item.id
+                } as AutomatonCardItem
+            }))
+
+            console.log("searched automatas:", items)
+            setAutomatasData(items)
+            
+            setCurrentPage(response.data!.page)
+            setTotalPages(response.data!.total)
+
+    }
+    // при создании инициализируем все значения для триггера всех необходимых действий
+    useEffect(() => {
+        engine.setInput("")
+    }, [])
+
+    // реакция на смену запроса
+    useEffect(() => {
+        if(validation?.status==="incomplete" || validation?.status==="invalid")
+            return
+        console.log("current page - currentPage")
+        console.log(lastQuery)
+
+        let ignore_object = {ignore:false};
+        
+        updateAutomatas(ignore_object)
+        return ()=>{
+            ignore_object.ignore =true
+        }
+    }, [lastQuery, currentPage])
+
+
+
+
+
+    // const mock_automata = [
+    //     {
+    //         name: "Conway's Game of Life",
+    //         slug: "game-of-life",
+    //         imageUrl: "/static/life.png",
+    //         description: "Classic cellular automaton.",
+    //         tags: ["classic", "2D"],
+    //         aspect: "square" as const,
+    //     },
+    //     {
+    //         name: "Langton's Ant",
+    //         slug: "langtons-ant",
+    //         imageUrl: "/static/ant.png",
+    //         description: "A simple but surprisingly complex automaton.",
+    //         tags: ["ant", "2D"],
+    //         aspect: "rectangle" as const,
+    //     }
+    // ];
+
+
     return (
         <>
             <main
@@ -321,7 +398,6 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
             >
 
                 <SearchInput
-
                     engine={engine}
                     onChange={value => {
 
@@ -344,6 +420,7 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
                         }
                     }
                     onSubmit={query => {
+
                         console.log(
                             "Search submitted:",
                             query,
@@ -351,6 +428,7 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
                         setLastQuery(
                             query,
                         );
+                        setCurrentPage(1);
 
                         /*
                          * Здесь в настоящей странице:
@@ -419,7 +497,7 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
                             2,
                         )}
                         <div>
-                        {lastQuery?buildAutomataSearchUrl(lastQuery, currentPage):"no query"}
+                            {lastQuery ? buildAutomataSearchUrl(lastQuery, currentPage) : "no query"}
                         </div>
                     </pre>
 
@@ -432,10 +510,11 @@ export default function SearchTestPage({loaderData}:Route.ComponentProps) {
                     }}
                 >
                     <AutomatonCardScroller
-                        items={mock_automata}
+                        items={automatasData}
                         maxColumns={4}
                         onCardClick={(automaton) => {
                             console.log("clicked:", automaton.slug);
+                            navigate(`/automata/${automaton.id_val}`)
                         }}
                         onCardHover={(automaton) => {
                             console.log("hover:", automaton.slug);

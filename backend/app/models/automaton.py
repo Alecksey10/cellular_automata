@@ -99,7 +99,6 @@ class Automaton(BaseModel):
         back_populates="automata",
     )
 
-
 automaton_tags = Table(
     "automaton_tags",
     Base.metadata,

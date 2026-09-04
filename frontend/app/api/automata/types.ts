@@ -80,3 +80,35 @@ export interface AutomatonCreateRequest{
 
     tag_ids: string[]
 }
+
+export type SearchSort =
+    | "popular"
+    | "views"
+    | "size"
+    | "date";
+
+
+export type SearchOwner =
+    | "any"
+    | "me";
+
+
+export interface AutomatonSearchRequest {
+    text?: string;
+    tags?: string[];
+    collections?: string[];
+
+    owner?: SearchOwner;
+    sort?: SearchSort;
+
+    page?: number;
+}
+
+
+export interface AutomatonSearchResponse {
+    total: number;
+    page: number;
+    page_size: number;
+
+    items: AutomatonCard[];
+}

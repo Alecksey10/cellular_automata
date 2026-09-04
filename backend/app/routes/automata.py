@@ -63,7 +63,7 @@ async def search_automata(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    page_size = 40
+    page_size = 5
     offset = (page - 1) * page_size
 
     owner_id = None

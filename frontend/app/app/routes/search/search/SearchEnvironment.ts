@@ -127,7 +127,6 @@ export class SearchEnvironment
     async setInput(
         value: string,
     ): Promise<void> {
-        console.log(value)
         const operationId =
             ++this.operationId;
 
@@ -497,7 +496,7 @@ export class SearchEnvironment
 
 
             if (
-                validation.status !== "valid"
+                !(validation.status == "valid" || validation.status == "empty")
             ) {
 
                 return {

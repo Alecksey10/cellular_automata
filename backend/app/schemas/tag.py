@@ -11,6 +11,10 @@ class TagShortResponse(BaseModel):
         from_attributes=True,
     )
 
+class TagCreateRequest(BaseModel):
+    name:str
+
+
 
 class TagResponse(BaseModel):
     id: UUID

@@ -7,6 +7,7 @@ export type AutomatonCardProps = {
   description?: string | null;
   slug?: string | null;
   tags?: string[];
+  id_val:string;
 
   aspect?: "square" | "rectangle";
 

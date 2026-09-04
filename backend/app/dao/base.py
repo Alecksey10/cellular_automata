@@ -47,7 +47,7 @@ class BaseDAO(Generic[ModelT]):
                 stmt = stmt.where(getattr(self.model, field) == value)
 
             result = await self.session.execute(stmt)
-            return result.scalars()
+            return result.scalars().all()
 
     async def get_by_id(
         self,

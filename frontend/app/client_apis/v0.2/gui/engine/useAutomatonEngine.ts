@@ -16,8 +16,8 @@ export function useAutomatonEngine(automatonId: string) {
   const [isRunning, setIsRunning] = useState(false);
   
   // Добавляем новые стейты для синхронизации ползунков
-  const [speed, setSpeed] = useState(1);
-  const [renderEveryN, setRenderEveryN] = useState(1);
+  const [speed, setSpeedState] = useState(1);
+  const [renderEveryN, setRenderEveryNState] = useState(1);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,13 +123,15 @@ export function useAutomatonEngine(automatonId: string) {
     engineRef.current?.runAction(actionId);
   }, []);
 
-  // const setSpeed = useCallback((speed: number) => {
-  //   engineRef.current?.setSpeed(speed);
-  // }, []);
+  const setSpeed = useCallback((speed: number) => {
+    setSpeedState(speed)
+    engineRef.current?.setSpeed(speed);
+  }, []);
 
-  // const setRenderEveryN = useCallback((n: number) => {
-  //   engineRef.current?.setRenderEveryN(n);
-  // }, []);
+  const setRenderEveryN = useCallback((n: number) => {
+    setRenderEveryNState(n)
+    engineRef.current?.setRenderEveryN(n);
+  }, []);
 
   return {
     canvasRef,

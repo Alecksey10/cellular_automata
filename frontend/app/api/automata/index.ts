@@ -1,6 +1,7 @@
 import { APIMethodCreateAutomata } from "./APIMethodCreateAutomata";
 import { APIMethodGetAutomataByID } from "./APIMethodGetAutomataByID";
 import { APIMethodGetAutomataSourceByID } from "./APIMethodGetAutomataByID";
+import { APIMethodSearchAtumatas } from "./APIMethodSearchAtumatas";
 import { APIMethodUpdateAutomata } from "./APIMethodUpdateAutomata";
 
 
@@ -16,4 +17,7 @@ export const automataAPI = {
 
     updateAutomata:
         new APIMethodUpdateAutomata(),
+
+    searchAutomata:
+        new APIMethodSearchAtumatas(),
 };

@@ -1,349 +1,255 @@
-import { useParams } from "react-router";
-import { Route } from "react-router";
+// import { useParams } from "react-router";
 
+// import {
+//     useContext,
+//     useEffect,
+//     useRef,
+//     useState,
+// } from "react";
 
-import {
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+// import {
+//     // ForestFire,
+//     LangtonsAnt,
+// } from "~/../client_apis/v0.1/example/index";
 
-import {
-    // ForestFire,
-    LangtonsAnt,
-} from "~/../client_apis/v0.1/example/index";
+// import {
+//     SimulationRuntime,
+// } from "~/../client_apis/v0.1/example/SimulationRuntime";
 
-import {
-    SimulationRuntime,
-} from "~/../client_apis/v0.1/example/SimulationRuntime";
+// import type {
+//     RenderData,
+// } from "~/../client_apis/v0.1";
+// import { loadProgram } from "../../../program_loader/ProgramLoader";
+// import { APIMethodGetAutomataSourceByID, type AutomataRequest, type AutomataSourceRequest } from "../../../api/automata/APIMethodGetAutomataByID";
 
-import type {
-    RenderData,
-} from "~/../client_apis/v0.1";
-import { loadProgram } from "../../../program_loader/ProgramLoader";
-import { APIMethodGetAutomataSourceByID, type AutomataSourceRequest } from "../../../api/automata/APIMethodGetAutomataByID";
-// import {programa} from "~/../client_apis/v0.1/example/ForestFire"
-// const response =
-//     await fetch("/api/simulation/forest-fire");
+// import { AuthContext } from "~/root";
+// import type { AuthenticationState } from "~/states/auth";
+// import type { Route } from "./+types/AutomataPlay";
+// import { automataAPI } from "../../../api/automata";
 
-// const definition =
-//     await response.json();
-
-// const program =
-//     await loadProgram(
-    //         definition.source,
-    //         "typescript",
-    //     );
+// export async function clientLoader({
+//   params,
+// }: Route.ClientLoaderArgs) {
+//     const { automatonId } = useParams();
+//     const res = await automataAPI.getAutomata.execute({automataID:automatonId} as AutomataRequest)
     
-export async function loader() {
-    return { message: "does not do anything" };
-}
+//     return res.data!;
+// }
 
 
-export default function Example() {
-    const { automatonId } = useParams();
+// export default function Example() {
+//     const { automatonId } = useParams();
 
-    const canvasRef =
-        useRef<HTMLCanvasElement>(null);
+//     const authed:AuthenticationState|null = useContext(AuthContext)
 
-    const forestRuntimeRef = useRef<SimulationRuntime | null>(null);
+//     const canvasRef =
+//         useRef<HTMLCanvasElement>(null);
 
-    const [forestIteration, setForestIteration] =
-        useState(0);
+//     const runtimeRef = useRef<SimulationRuntime | null>(null);
+
+//     const [runtimeIteration, setRuntimeIteration] =
+//         useState(0);
 
 
-    useEffect(() => {
-        
-        let runtime:SimulationRuntime|null = forestRuntimeRef.current;
-        let ignore = false;
-        async function start() {
-            const method = new APIMethodGetAutomataSourceByID()
-            const response = await method.execute({automataID:automatonId} as AutomataSourceRequest);
+//     useEffect(() => {
+
+//         let runtime:SimulationRuntime|null = runtimeRef.current;
+//         let ignore = false;
+//         async function start() {
+//             const method = new APIMethodGetAutomataSourceByID()
+//             const response = await method.execute({automataID:automatonId} as AutomataSourceRequest);
                 
-            if (!response.ok) {
-                console.log("Не удалось загрузить исходный код автомата");
-                console.error(response.error)
-                return;
-            }
+//             if (!response.ok) {
+//                 console.log("Не удалось загрузить исходный код автомата");
+//                 console.error(response.error)
+//                 return;
+//             }
 
 
-            const definition =
-                await response.data!.source_code
+//             const definition =
+//                 await response.data!.source_code
             
-            const program =
-            await loadProgram(
-                definition,
-                "typescript",
-            );
-            if(!ignore)
-            {
-            forestRuntimeRef.current =
-                new SimulationRuntime({
-                    program,
+//             const program =
+//             await loadProgram(
+//                 definition,
+//                 "typescript",
+//             );
+//             if(!ignore)
+//             {
+//             runtimeRef.current =
+//                 new SimulationRuntime({
+//                     program,
 
-                    runtime: {
-                        stepsPerRender: 3,
-                    },
+//                     runtime: {
+//                         stepsPerRender: 1,
+//                     },
 
-                    onRender: (data) => {
-                        const canvas =
-                            canvasRef.current;
+//                     onRender: (data) => {
+//                         const canvas =
+//                             canvasRef.current;
 
-                        if (!canvas) {
-                            return;
-                        }
+//                         if (!canvas) {
+//                             return;
+//                         }
 
-                        renderCanvas(
-                            canvas,
-                            data,
-                        );
-                    },
-                    onIterate: (data:number)=>
-                    {
-                        setForestIteration(data)
+//                         renderCanvas(
+//                             canvas,
+//                             data,
+//                         );
+//                     },
+//                     onIterate: (data:number)=>
+//                     {
+//                         setRuntimeIteration(data)
 
-                    }
-                });
-            runtime = forestRuntimeRef.current
-            runtime.start();
-            }
-        }
-        start();
+//                     }
+//                 });
+//             runtime = runtimeRef.current
+//             runtime.start();
+//             }
+//         }
+//         start();
 
-        return () => {
-            ignore = true;
-            console.warn("disposing it")
-            forestRuntimeRef.current?.dispose();
-        };
-    }, []);
-
-
-        return (
-        <main>
-            <h1>
-                Simulation API v0.1
-            </h1>
+//         return () => {
+//             ignore = true;
+//             console.warn("disposing it")
+//             runtimeRef.current?.dispose();
+//         };
+//     }, []);
 
 
-            <section>
-                <h2>
-                    Forest Fire
-                </h2>
-
-                <canvas
-                    ref={canvasRef}
-                    width={600}
-                    height={600}
-                />
-
-                <div>
-                    <button
-                        onClick={() =>
-                            forestRuntimeRef
-                                .current
-                                ?.start()
-                        }
-                    >
-                        Start
-                    </button>
-
-                    <button
-                        onClick={() =>
-                            forestRuntimeRef
-                                .current
-                                ?.pause()
-                        }
-                    >
-                        Pause
-                    </button>
-
-                    <button
-                        onClick={() =>
-                            forestRuntimeRef
-                                .current
-                                ?.step()
-                        }
-                    >
-                        Step
-                    </button>
-
-                    <button
-                        onClick={() =>
-                            forestRuntimeRef
-                                .current
-                                ?.init()
-                        }
-                    >
-                        Reset
-                    </button>
-                </div>
-
-                <div>
-                    Iteration: {forestIteration}
-                </div>
-            </section>
-        </main>
-    );
-}
-
-/* =========================================================
- * Renderer
- * ======================================================= */
-
-function renderCanvas(
-    canvas: HTMLCanvasElement,
-    frame: RenderData,
-): void {
-    const ctx =
-        canvas.getContext("2d");
-
-    if (!ctx) {
-        return;
-    }
-
-    const scaleX =
-        canvas.width / frame.width;
-
-    const scaleY =
-        canvas.height / frame.height;
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-    );
-
-    if (frame.type !== "grid") {
-        return;
-    }
-
-    const cells =
-        frame.data as Uint8Array;
-
-    for (
-        let y = 0;
-        y < frame.height;
-        y++
-    ) {
-        for (
-            let x = 0;
-            x < frame.width;
-            x++
-        ) {
-            const value =
-                cells[
-                    y * frame.width + x
-                ];
-
-            if (value === 0) {
-                ctx.fillStyle = "#101820";
-            } else if (value === 1) {
-                ctx.fillStyle = "#26733a";
-            } else {
-                ctx.fillStyle = "#ff5a24";
-            }
-
-            ctx.fillRect(
-                x * scaleX,
-                y * scaleY,
-                scaleX + 1,
-                scaleY + 1,
-            );
-        }
-    }
-}
-function renderGrid(
-    ctx: CanvasRenderingContext2D,
-    frame: RenderData,
-    scaleX: number,
-    scaleY: number,
-): void {
-    const cells =
-        frame.data as Uint8Array;
-
-    for (let y = 0; y < frame.height; y++) {
-        for (let x = 0; x < frame.width; x++) {
-
-            const value =
-                cells[y * frame.width + x];
-
-            if (value === 0) {
-                ctx.fillStyle = "#101820";
-            } else if (value === 1) {
-                ctx.fillStyle = "#26733a";
-            } else {
-                ctx.fillStyle = "#ff5a24";
-            }
-
-            ctx.fillRect(
-                x * scaleX,
-                y * scaleY,
-                scaleX + 1,
-                scaleY + 1,
-            );
-        }
-    }
-}
+//         return (
+//         <main>
+//             <h1>
+//                 Simulation API v0.1
+//             </h1>
 
 
-function renderAnt(
-    ctx: CanvasRenderingContext2D,
-    frame: RenderData,
-    scaleX: number,
-    scaleY: number,
-): void {
-    const data =
-        frame.data as {
-            cells: Uint8Array;
+//             <section>
+//                 <h2>
+//                     Forest Fire
+//                 </h2>
 
-            ant: {
-                x: number;
-                y: number;
-                direction: number;
-            };
-        };
+//                 <canvas
+//                     ref={canvasRef}
+//                     width={600}
+//                     height={600}
+//                 />
 
+//                 <div>
+//                     <button
+//                         onClick={() =>
+//                             runtimeRef
+//                                 .current
+//                                 ?.start()
+//                         }
+//                     >
+//                         Start
+//                     </button>
 
-    for (
-        let y = 0;
-        y < frame.height;
-        y++
-    ) {
-        for (
-            let x = 0;
-            x < frame.width;
-            x++
-        ) {
-            const value =
-                data.cells[
-                    y * frame.width + x
-                ];
+//                     <button
+//                         onClick={() =>
+//                             runtimeRef
+//                                 .current
+//                                 ?.pause()
+//                         }
+//                     >
+//                         Pause
+//                     </button>
 
-            ctx.fillStyle =
-                value === 0
-                    ? "#eeeeee"
-                    : "#222222";
+//                     <button
+//                         onClick={() =>
+//                             runtimeRef
+//                                 .current
+//                                 ?.step()
+//                         }
+//                     >
+//                         Step
+//                     </button>
 
-            ctx.fillRect(
-                x * scaleX,
-                y * scaleY,
-                scaleX + 1,
-                scaleY + 1,
-            );
-        }
-    }
+//                     <button
+//                         onClick={() =>
+//                             runtimeRef
+//                                 .current
+//                                 ?.init()
+//                         }
+//                     >
+//                         Reset
+//                     </button>
+//                 </div>
 
+//                 <div>
+//                     Iteration: {runtimeIteration}
+//                 </div>
+//             </section>
+//         </main>
 
-    /*
-     * Муравей.
-     */
-    ctx.fillStyle = "#e33";
+//     );
+// }
 
-    ctx.fillRect(
-        data.ant.x * scaleX,
-        data.ant.y * scaleY,
-        Math.max(2, scaleX),
-        Math.max(2, scaleY),
-    );
-}
+// /* =========================================================
+//  * Renderer
+//  * ======================================================= */
+
+// function renderCanvas(
+//     canvas: HTMLCanvasElement,
+//     frame: RenderData,
+// ): void {
+//     const ctx =
+//         canvas.getContext("2d");
+
+//     if (!ctx) {
+//         return;
+//     }
+
+//     const scaleX =
+//         canvas.width / frame.width;
+
+//     const scaleY =
+//         canvas.height / frame.height;
+
+//     ctx.clearRect(
+//         0,
+//         0,
+//         canvas.width,
+//         canvas.height,
+//     );
+
+//     if (frame.type !== "grid") {
+//         return;
+//     }
+
+//     const cells =
+//         frame.data as Uint8Array;
+
+//     for (
+//         let y = 0;
+//         y < frame.height;
+//         y++
+//     ) {
+//         for (
+//             let x = 0;
+//             x < frame.width;
+//             x++
+//         ) {
+//             const value =
+//                 cells[
+//                     y * frame.width + x
+//                 ];
+
+//             if (value === 0) {
+//                 ctx.fillStyle = "#101820";
+//             } else if (value === 1) {
+//                 ctx.fillStyle = "#26733a";
+//             } else {
+//                 ctx.fillStyle = "#ff5a24";
+//             }
+
+//             ctx.fillRect(
+//                 x * scaleX,
+//                 y * scaleY,
+//                 scaleX + 1,
+//                 scaleY + 1,
+//             );
+//         }
+//     }
+// }
