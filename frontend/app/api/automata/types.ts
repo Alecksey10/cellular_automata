@@ -12,6 +12,7 @@ export interface AutomatonCard {
     };
 
     tags?: Tag[];
+    preview_image: string|null
 }
 
 export interface AutomatonSourceCode {
@@ -45,6 +46,7 @@ export interface AutomatonGetResponse {
 
     created_at: string;
     updated_at: string;
+    image: string|null
 }
 
 
@@ -64,6 +66,7 @@ export interface AutomatonCreateResponse {
     tags: TagShortResponse[]
 
     based_on_id: number | null
+    image: string|null
 
     created_at: string
     updated_at: string
@@ -81,6 +84,11 @@ export interface AutomatonCreateRequest{
     tag_ids: string[]
 }
 
+export interface AutomatonUpdateImageRequest{
+    automataID: string
+    data:File|null
+}
+
 export type SearchSort =
     | "popular"
     | "views"
@@ -92,17 +100,19 @@ export type SearchOwner =
     | "any"
     | "me";
 
-
 export interface AutomatonSearchRequest {
-    text?: string;
-    tags?: string[];
-    collections?: string[];
-
-    owner?: SearchOwner;
-    sort?: SearchSort;
-
-    page?: number;
+    uri:string
 }
+// export interface AutomatonSearchRequest {
+//     text?: string;
+//     tags?: string[];
+//     collections?: string[];
+
+//     owner?: SearchOwner;
+//     sort?: SearchSort;
+
+//     page?: number;
+// }
 
 
 export interface AutomatonSearchResponse {
@@ -112,3 +122,15 @@ export interface AutomatonSearchResponse {
 
     items: AutomatonCard[];
 }
+
+
+export interface AutomatonsGetImagesRequest{
+    images_ids: string[]
+}
+
+export interface AutomatonsGetImagesResponse{
+    automatas_data:{
+        id: string,
+        image_url:string}[]
+}
+

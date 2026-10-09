@@ -1,10 +1,18 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.routes import auth_router, automata_router, tags_router
 from fastapi.middleware.cors import CORSMiddleware
-
+from routes.api_tags import tags_metadata
+from app.config import settings
 import db
 
-app = FastAPI()
+description = """
+Обзор клеточных автоматов, основная документация в репозитории
+"""
+
+app = FastAPI(openapi_tags=tags_metadata, description=description)
 
 
 @app.get("/")
@@ -32,3 +40,5 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(automata_router)
 app.include_router(tags_router)
+
+app.mount("/static", StaticFiles(directory=Path(".").joinpath(settings.images_directory)), name='static',)

@@ -8,6 +8,8 @@ export class CurrentAutomataState
 {
     chosenTagsIds:string[]=[];
     cellularAutomatonData:CellularAutomatonData|null=null;
+    
+    //Когда необходимые данные автомата заполнены достаточно
     isReady:boolean=false;
     isDownloaded:boolean=false;
 }

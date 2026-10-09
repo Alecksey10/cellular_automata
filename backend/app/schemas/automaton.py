@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from fastapi import File, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.other import SearchOwner, SearchSort
@@ -22,9 +23,11 @@ class AutomatonCardResponse(BaseModel):
 
     tags: list[TagShortResponse]
 
+    preview_image:UUID | None
+
     model_config = ConfigDict(
-        from_attributes=True,
-    )
+            from_attributes=True,
+        )
 
 
 class AutomatonResponse(AutomatonCardResponse):
@@ -85,6 +88,9 @@ class AutomatonUpdateRequest(BaseModel):
     based_on_id: UUID | None = None
 
     tag_ids: list[UUID] | None = None
+
+class AutomatonUpdateImageRequest(BaseModel):
+    image: UploadFile =File(...)
 
 
 from enum import StrEnum

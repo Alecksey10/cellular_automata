@@ -1,233 +1,3 @@
-// import {
-//     useEffect,
-//     useState,
-// } from "react";
-
-// import { tagsAPI } from "../../../api/tags";
-
-// import type {
-//     Tag,
-// } from "../../../api/tags/types";
-
-// import type {
-//     AutomatonCard,
-// } from "../../../api/automata/types";
-// import { useNavigate } from "react-router";
-
-
-// export default function AutomataSearch() {
-//     const navigate = useNavigate();
-//     console.log('debug')
-
-//     const [tags, setTags] =
-//         useState<Tag[]>([]);
-
-//     const [selectedTag, setSelectedTag] =
-//         useState<string | null>(null);
-
-//     const [automata, setAutomata] =
-//         useState<AutomatonCard[]>([]);
-
-//     const [loadingTags, setLoadingTags] =
-//         useState(true);
-
-//     const [loadingAutomata, setLoadingAutomata] =
-//         useState(false);
-
-//     const [error, setError] =
-//         useState<string | null>(null);
-
-
-//     useEffect(() => {
-//         loadTags();
-//     }, []);
-
-
-//     async function loadTags() {
-//         setLoadingTags(true);
-//         setError(null);
-
-//         try {
-//             const response =
-//                 await tagsAPI.getTags.execute();
-
-//             if (!response.ok) {
-//                 setError(
-//                     response.error?.message ??
-//                     "Не удалось загрузить теги",
-//                 );
-
-//                 return;
-//             }
-//             console.log('теги - ')
-//             console.log(response.data)
-
-//             setTags(
-//                 response.data ?? [],
-//             );
-//         } catch {
-//             setError(
-//                 "Ошибка соединения с сервером",
-//             );
-//         } finally {
-//             setLoadingTags(false);
-//         }
-//     }
-
-
-//     async function selectTag(
-//         tagId: string,
-//     ) {
-//         setSelectedTag(tagId);
-//         setLoadingAutomata(true);
-//         setError(null);
-
-//         try {
-//             const response =
-//                 await tagsAPI
-//                     .getAutomataByTag
-//                     .execute(tagId);
-
-//             if (!response.ok) {
-//                 setError(
-//                     response.error?.message ??
-//                     "Не удалось загрузить автоматы",
-//                 );
-
-//                 return;
-//             }
-
-//             setAutomata(
-//                 response.data ?? [],
-//             );
-//         } catch {
-//             setError(
-//                 "Ошибка соединения с сервером",
-//             );
-//         } finally {
-//             setLoadingAutomata(false);
-//         }
-//     }
-
-
-//     function openAutomaton(
-//         automatonId: string,
-//     ) {
-//         navigate(
-//             `/automata/${automatonId}`, //TODO - хардкод пути automata
-//         );
-//     }
-
-
-//     return (
-//         <div>
-//             <h1>
-//                 Автоматы
-//             </h1>
-
-//             {error && (
-//                 <div>
-//                     {error}
-//                 </div>
-//             )}
-
-
-//             <section>
-//                 <h2>
-//                     Теги
-//                 </h2>
-
-//                 {loadingTags ? (
-//                     <div>
-//                         Загрузка тегов...
-//                     </div>
-//                 ) : (
-//                     <div>
-//                         {tags.map((tag) => (
-//                             <button
-//                                 key={tag.id}
-//                                 onClick={() =>
-//                                     selectTag(tag.id)
-//                                 }
-//                                 aria-pressed={
-//                                     selectedTag === tag.id
-//                                 }
-//                             >
-//                                 {tag.name}
-//                                 {" "}
-//                                 ({tag.automata_count})
-//                             </button>
-//                         ))}
-//                     </div>
-//                 )}
-//             </section>
-
-
-//             <section>
-//                 <h2>
-//                     Автоматы
-//                 </h2>
-
-//                 {loadingAutomata && (
-//                     <div>
-//                         Загрузка...
-//                     </div>
-//                 )}
-
-//                 {!loadingAutomata &&
-//                     selectedTag &&
-//                     automata.length === 0 && (
-//                         <div>
-//                             В этом теге нет автоматов.
-//                         </div>
-//                     )
-//                 }
-
-
-//                 <div>
-//                     {automata.map((automaton) => (
-//                         <article
-//                             key={automaton.id}
-//                             onClick={() =>
-//                                 openAutomaton(
-//                                     automaton.id,
-//                                 )
-//                             }
-//                             style={{
-//                                 cursor: "pointer",
-//                             }}
-//                         >
-//                             <h3>
-//                                 {automaton.name}
-//                             </h3>
-
-//                             {automaton.description && (
-//                                 <p>
-//                                     {
-//                                         automaton.description
-//                                     }
-//                                 </p>
-//                             )}
-
-//                             <div>
-//                                 {automaton.tags?.map(
-//                                     (tag) => (
-//                                         <span
-//                                             key={tag.id}
-//                                         >
-//                                             {tag.name}
-//                                         </span>
-//                                     ),
-//                                 )}
-//                             </div>
-//                         </article>
-//                     ))}
-//                 </div>
-//             </section>
-//         </div>
-//     );
-// }
-
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { SearchEnvironment, type SearchEnvironmentOptions } from "./search/SearchEnvironment";
@@ -252,8 +22,12 @@ import { tagsAPI } from "../../../api/tags";
 import type { Route } from "./+types/AutomataSearch";
 import { provider, SingleTon } from "./search/data/MockTaggedSearchDataProvider";
 import { automataAPI } from "../../../api/automata";
-import type { AutomatonSearchRequest } from "../../../api/automata/types";
+import type { AutomatonSearchRequest, AutomatonsGetImagesRequest } from "../../../api/automata/types";
 import { useNavigate } from "react-router";
+import { apiConfig } from "../../../api/Config";
+import { SearchQueryUriSerializer } from "./search/utils/SearchQueryUriSerializer";
+import { SearchQuerySerializer } from "./search/utils/SearchQuerySerializer";
+// import { requestAutomatonSearchToUri } from "../../../api/automata/utils";
 
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
@@ -265,7 +39,8 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 }
 
 export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
-    const navigate = useNavigate();
+    const current_location = window.location.search.toString().slice(1) //значок вопроса убираем
+    const initial_query = new SearchQueryUriSerializer().deserialize(current_location)
     const engine =
         useMemo(
             () => {
@@ -275,20 +50,10 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                 );
                 return result;
             }, []);
-
-
+    
     const [lastQuery, setLastQuery] =
-        useState<SearchQuery>(
-            {
-                text: "",
-                tags: [],
-                collections: [],
-                owner: "any",
-                sort: "popular",
-            } as SearchQuery,
-        );
-
-
+            useState<SearchQuery>(initial_query);
+   
     const [validation, setValidation] =
         useState<SearchValidation | null>(
             null,
@@ -303,54 +68,81 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
 
     let [automatasData, setAutomatasData] = useState<AutomatonCardItem[]>([])
     
-    async function updateAutomatas(ignoreObject:{ignore:boolean})
-    {
-        const response = await automataAPI.searchAutomata.execute({
-                text: lastQuery.text,
-                tags: lastQuery.tags?.map(tag => tag.id),
-                collections: lastQuery.collections.map(collection => collection.id),
-                owner: lastQuery.owner,
-                sort: lastQuery.sort,
-                page: currentPage,
-            } as AutomatonSearchRequest
-            );
-            if (ignoreObject.ignore) {
+    async function updateAutomatas(ignoreObject: { ignore: boolean }) {
+        const searchRequest = 
+        {
+            uri: `${new SearchQueryUriSerializer().serialize(lastQuery)}`
+        }
+        const searchRequestServer = 
+        {
+            //TODO надо переписывать всё. Методы разраслись, нет привязки к странице в запросах. Не продумал.
+            uri: `${new SearchQueryUriSerializer().serializeClearServer(lastQuery)}`+`&page=${currentPage}`
+        }
+        const response_items = await automataAPI.searchAutomata.execute(searchRequestServer);
+
+        if (ignoreObject.ignore) {
+            return
+        }
+        if (!response_items.ok) {
+            console.error("ошибка поиска автоматов", response_items.status, response_items.error)
+            return
+        }
+
+        let is_preview_images = response_items.data!.items.filter((item)=>!(item.preview_image === null) ).length>0
+        //Загрузка путей изображений
+
+        let images_data:any[] = []
+        if (is_preview_images) {
+            const response_images_urls = await automataAPI.getAutomatasImages.execute(
+                {
+                    images_ids: response_items.data!.items.map((automaton) => automaton.preview_image).filter((id) => id)
+                } as AutomatonsGetImagesRequest
+            )
+            if (!response_images_urls.ok) {
+                console.error("ошибка загрузки изображений автоматов", response_images_urls.status, response_images_urls.error)
                 return
             }
-            if (!response.ok) {
-                console.error("ошибка поиска автоматов", response.status, response.error)
-                return
-            }
+            images_data =response_images_urls.data!.automatas_data
+        }
 
-            let items = (response.data!.items.map(item => {
-                return {
-                    name: item.name,
-                    description: item.description,
-                    slug: item.slug,
-                    tags: item.tags?.map(tag => tag.name),
-                    id_val: item.id
-                } as AutomatonCardItem
-            }))
+        let items = (response_items.data!.items.map(item => {
+            return {
+                name: item.name,
+                description: item.description,
+                slug: item.slug,
+                tags: item.tags?.map(tag => tag.name),
+                id_val: item.id,
+                //ищем подходящий элемент
+                imageUrl: item.preview_image?[apiConfig.staticURL, images_data.find(data=>data.id==item.preview_image)?.image_url].join(""):undefined
+            } as AutomatonCardItem
+        }))
 
-            console.log("searched automatas:", items)
-            setAutomatasData(items)
-            
-            setCurrentPage(response.data!.page)
-            setTotalPages(response.data!.total)
+        console.log("searched automatas:", items)
+        setAutomatasData(items)
+        setCurrentPage(response_items.data!.page)
+        setTotalPages(response_items.data!.total)
+        
+        const params = new URLSearchParams(`${searchRequest.uri}`);
 
+        const url = new URL(window.location.toString());
+        url.search = params.toString();
+
+        history.replaceState(null, '', url);        
     }
     // при создании инициализируем все значения для триггера всех необходимых действий
     useEffect(() => {
-        engine.setInput("")
-    }, [])
+        let fu = async ()=>
+        {
+            await engine.setInput(new SearchQuerySerializer().serialize(initial_query))
+            setLastQuery(initial_query)
+        }
+        fu()
+    },[])
 
     // реакция на смену запроса
     useEffect(() => {
         if(validation?.status==="incomplete" || validation?.status==="invalid")
-            return
-        console.log("current page - currentPage")
-        console.log(lastQuery)
-
+            return         
         let ignore_object = {ignore:false};
         
         updateAutomatas(ignore_object)
@@ -358,30 +150,6 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
             ignore_object.ignore =true
         }
     }, [lastQuery, currentPage])
-
-
-
-
-
-    // const mock_automata = [
-    //     {
-    //         name: "Conway's Game of Life",
-    //         slug: "game-of-life",
-    //         imageUrl: "/static/life.png",
-    //         description: "Classic cellular automaton.",
-    //         tags: ["classic", "2D"],
-    //         aspect: "square" as const,
-    //     },
-    //     {
-    //         name: "Langton's Ant",
-    //         slug: "langtons-ant",
-    //         imageUrl: "/static/ant.png",
-    //         description: "A simple but surprisingly complex automaton.",
-    //         tags: ["ant", "2D"],
-    //         aspect: "rectangle" as const,
-    //     }
-    // ];
-
 
     return (
         <>
@@ -396,11 +164,9 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                         "0 20px",
                 }}
             >
-
                 <SearchInput
                     engine={engine}
                     onChange={value => {
-
                         console.log(
                             "Input changed:",
                             value,
@@ -429,16 +195,6 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                             query,
                         );
                         setCurrentPage(1);
-
-                        /*
-                         * Здесь в настоящей странице:
-                         *
-                         * loadAutomata(query)
-                         *
-                         * или
-                         *
-                         * api.search(query)
-                         */
                     }}
                     onFocus={() => {
 
@@ -446,16 +202,12 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                             "Search focused",
                         );
                     }}
-
-
                     onBlur={() => {
 
                         console.log(
                             "Search blurred",
                         );
                     }}
-
-
                     onEscape={() => {
 
                         console.log(
@@ -463,19 +215,14 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                         );
                     }}
                 />
-
-
                 <section
                     style={{
                         marginTop: 30,
                     }}
                 >
-
                     <h3>
                         Validation
                     </h3>
-
-
                     <pre>
                         {JSON.stringify(
                             validation,
@@ -514,7 +261,7 @@ export default function SearchTestPage({ loaderData }: Route.ComponentProps) {
                         maxColumns={4}
                         onCardClick={(automaton) => {
                             console.log("clicked:", automaton.slug);
-                            navigate(`/automata/${automaton.id_val}`)
+                            window.open(`/automata/${automaton.id_val}`, '_blank', 'noopener,noreferrer');
                         }}
                         onCardHover={(automaton) => {
                             console.log("hover:", automaton.slug);

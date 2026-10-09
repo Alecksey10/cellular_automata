@@ -9,11 +9,12 @@ import CellularAutomatonForm, {
 } from "~/components/automata/AutomataInput";
 import './css.css'
 import { automataAPI } from "../../../api/automata";
-import type { AutomatonCreateRequest, AutomatonSourceCode } from "../../../api/automata/types";
+import type { AutomatonCreateRequest, AutomatonsGetImagesRequest, AutomatonSourceCode, AutomatonUpdateImageRequest } from "../../../api/automata/types";
 import { useParams } from "react-router";
 import type { AutomataUpdateRequest } from "../../../api/automata/APIMethodUpdateAutomata";
 import type { AutomataRequest, AutomataSourceRequest } from "../../../api/automata/APIMethodGetAutomataByID";
 import { automataActions, automataInitialState, automataReducer, type CellularAutomatonData } from "./UpdateAutomataPageReducer";
+import { ImageUploader } from "~/components/ui/imageInput/ImageUploader";
 
 export async function loader() {
   return { message: "does not do anything" };
@@ -27,7 +28,7 @@ export default function Component() {
 
   const { automatonId } = useParams();
   const [automataState, dispatch] = useReducer(automataReducer, automataInitialState)
-
+  const [image, setImage] = useState<File | null>(null);
 
   const [tags, setTags] = useState<TagData[] | null>(null)
   // //Выбранные теги
@@ -103,17 +104,18 @@ export default function Component() {
     let ignore = false;
     async function requestAutomataData() {
       try {
-        const response = await automataAPI.getAutomata.execute({ automataID: automatonId } as AutomataRequest);
+        //загрузка данных автомата
+        const responseAutomaton = await automataAPI.getAutomata.execute({ automataID: automatonId } as AutomataRequest);
 
-        if (!response.ok) {
+        if (!responseAutomaton.ok) {
           alert(
-            response.error?.message ??
+            responseAutomaton.error?.message ??
             "Не удалось загрузить данные об автомате",
           );
 
           return;
         }
-
+        //загрузка исходного кода автомата
         const responseSource = await automataAPI.getAutomataSource.execute({ automataID: automatonId } as AutomataSourceRequest);
 
         if (!responseSource.ok) {
@@ -124,18 +126,34 @@ export default function Component() {
 
           return;
         }
+        //загрузка ссылки изображения автомата
+        let imageUrl = null
+        if(responseAutomaton.data!.image)
+        {
+          const responseImageUrl = await automataAPI.getAutomatasImages.execute({ images_ids: [responseAutomaton.data!.image] } as AutomatonsGetImagesRequest);
+          if (!responseImageUrl.ok) {
+            alert(
+              responseImageUrl.error?.message ??
+              "Не удалось загрузить ссылку изображения автомата",
+            );
+            return;
+          }
+          imageUrl = responseImageUrl.data!.automatas_data[0];
+        }
+
+        
         if (ignore) {
           console.warn('ignored request automata data')
           return
         }
         dispatch(automataActions.automata_data_downloaded({
-          name: response.data!.name,
-          slug: response.data!.slug,
-          description: response.data!.description,
+          name: responseAutomaton.data!.name,
+          slug: responseAutomaton.data!.slug,
+          description: responseAutomaton.data!.description,
           sourceCode: responseSource.data!.source_code
         } as CellularAutomatonData));
 
-        dispatch(automataActions.chosen_tags_set(response.data!.tags.map(tag => { return tag.id })))
+        dispatch(automataActions.chosen_tags_set(responseAutomaton.data!.tags.map(tag => { return tag.id })))
 
       } catch {
         alert(
@@ -209,6 +227,30 @@ export default function Component() {
     })
 
   }
+
+  function setAutomataImage() {
+
+    const createAutomataMethod = automataAPI.updateAutomataImage;
+    let request: AutomatonUpdateImageRequest = {
+      automataID: automatonId!,
+      data: image
+    };
+
+    createAutomataMethod.execute(request).then((response) => {
+      console.log(response)
+      if(!response.ok)
+      {
+        alert('ошибка' + response.error?.detail)
+      }
+      else
+      {
+        alert('Изображение успешно обновлено')
+      }
+    })
+
+  }
+
+
   console.log(automataState.isDownloaded)
   return (
     <div className="create-automata">
@@ -249,7 +291,8 @@ export default function Component() {
             <CellularAutomatonForm onChange={handleDataSubmit} key={'unloaded'}/>}
 
         </section>
-
+          
+        
         {/* Теги */}
         {tags !== null && (
           <section className="create-automata__card">
@@ -322,8 +365,25 @@ export default function Component() {
             </Button>
           </div>
         )}
+        <section className="create-automata__card">
+          <div className="create-automata__card-header">
+            <h2 className="create-automata__card-title">
+              Изображение
+            </h2>
+            <ImageUploader value={image} onChange={setImage} />
+            {automataState.isReady && (
+              <div className="create-automata__actions">
+                <Button onClick={setAutomataImage} style={{ fontSize: '20px' }}>
+                  Обновить изображение
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
 
       </div>
+      
+      
     </div>
   );
 }

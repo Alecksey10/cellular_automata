@@ -25,6 +25,7 @@ router = APIRouter(
 )
 async def get_tags(
     session: AsyncSession = Depends(get_session),
+    
 ) -> list[TagResponse]:
     dao = TagDAO(session)
 
@@ -45,6 +46,7 @@ async def get_tags(
 @router.get(
     "/{tag_id}/automata",
     response_model=list[AutomatonCardResponse],
+    tags=['crud'],
 )
 async def get_automata_by_tag(
     tag_id: UUID,
@@ -70,6 +72,7 @@ async def get_automata_by_tag(
     "/create",
     response_model=TagShortResponse,
     status_code=status.HTTP_201_CREATED,
+    tags=['crud'],
 )
 async def create_tag(
     data: TagCreateRequest,
@@ -93,6 +96,7 @@ async def create_tag(
 @router.delete(
     "/{tag_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    tags=['crud'],
 )
 async def delete_tag(
     tag_id: UUID,
@@ -116,6 +120,7 @@ async def delete_tag(
 @router.patch(
     "/{tag_id}",
     response_model=TagShortResponse,
+    tags=['crud'],
 )
 async def update_tag(
     tag_id: UUID,

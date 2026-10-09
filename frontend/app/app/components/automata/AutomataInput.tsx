@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DataUploader, { type UploadData } from '../ui/DataUploader';
+import { ImageUploader } from '../ui/imageInput/ImageUploader';
 
 export interface CellularAutomatonFormData {
   name: string;
@@ -18,7 +19,7 @@ export default function CellularAutomatonForm({ onChange, initData={name:"", slu
   const [slug, setSlug] = useState(initData.slug);
   const [description, setDescription] = useState(initData.description);
   const [sourceCode, setSourceCode] = useState<UploadData>({ type: 'text', content: initData.sourceCode.content });
-
+  
   const [errors, setErrors] = useState<{
     name?: string;
     slug?:string;
@@ -63,7 +64,7 @@ export default function CellularAutomatonForm({ onChange, initData={name:"", slu
       name: name.trim(),
       slug: slug.trim(),
       description: description.trim(),
-      sourceCode: sourceCode as UploadData,
+      sourceCode: sourceCode as UploadData
     });
   }, [name,slug, description, sourceCode]);
 
@@ -192,6 +193,7 @@ export default function CellularAutomatonForm({ onChange, initData={name:"", slu
         </p>
 
         <DataUploader onChange={setSourceCode} initialUploadData={{type:'text', content:sourceCode?.content}} />
+        
 
         {errors.sourceCode && (
           <p style={{ color: '#d32f2f', marginTop: '6px', fontSize: '14px' }}>

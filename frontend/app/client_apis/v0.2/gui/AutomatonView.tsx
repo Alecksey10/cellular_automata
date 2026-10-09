@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import { automataAPI } from "../../../api/automata";
 import type { AutomataRequest } from "../../../api/automata/APIMethodGetAutomataByID";
 import { useContext } from "react";
-import { AuthContext } from "~/root";
+import { AuthContext, type UserContext } from "~/root";
 import { AuthenticationState } from "~/states/auth";
 import type { Route } from "./+types/AutomatonView";
 import type { AutomatonGetResponse } from "../../../api/automata/types";
@@ -30,7 +30,8 @@ export default function AutomatonView({
 }: Route.ComponentProps) {
   const navigate = useNavigate();
   const data = loaderData as AutomatonGetResponse
-  const authed:AuthenticationState|null = useContext(AuthContext)
+  // const authed:AuthenticationState|null = useContext(AuthContext)
+  const userContext:UserContext = useContext(AuthContext)
   const { automatonId } = useParams();
   const engine = useAutomatonEngine(automatonId!);
 
@@ -54,8 +55,8 @@ export default function AutomatonView({
   return (
     <main className="p-6 max-w-7xl mx-auto">
       {engine.schema && <AutomatonHeader schema={engine.schema} />}
-      {authed?.isAuth && data.owner
-      ?((authed.userID as string)==(data.owner!.id.toString())?<Button onClick={()=>{navigate(`/update_automata/${automatonId}`)}}>Редактировать автомат</Button>:<></>)
+      {userContext.authState?.isAuth && data.owner
+      ?((userContext.authState.userID as string)==(data.owner!.id.toString())?<Button onClick={()=>{navigate(`/update_automata/${automatonId}`)}}>Редактировать автомат</Button>:<></>)
       :<></>}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 mt-6">

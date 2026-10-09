@@ -8,7 +8,7 @@ export default [
   layout("routes/app-layout.tsx", [
     route("test_r2/", "routes/auth/AuthPage.tsx"),
     route("search_by_tags/", "routes/search/AutomataSearch.tsx"),
-    route("automata/:automatonId", "../client_apis/v0.2/gui/AutomatonView.tsx"),
+    route("automata/:automatonId", "../client_apis/v0.2.1/gui/AutomatonView.tsx"),
     route("update_automata/:automatonId", "routes/automata/UpdateAutomataPage.tsx"),
     route("create_automata/", "routes/automata/CreateAutomataPage.tsx"),
   ]),

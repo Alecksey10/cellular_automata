@@ -1,13 +1,18 @@
+# from pathlib import Path
+from typing import List
 from uuid import UUID
 
 from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Path,
     Query,
     Response,
+    UploadFile,
     status,
 )
+from pydantic import Field
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,30 +20,36 @@ from app.dao.automaton import AutomatonDAO
 from app.dao.tag import TagDAO
 from app.db.session import get_session, session_scope
 from app.dependencies.auth import get_current_user
-from app.models.automaton import Automaton
+from app.models.automaton import Automaton, automaton_images
 from app.models.user import User
 from app.schemas.automaton import (
     AutomatonCreateRequest,
     AutomatonResponse,
     AutomatonSearchResponse,
     AutomatonSourceResponse,
+    AutomatonUpdateImageRequest,
     AutomatonUpdateRequest,
 )
+from app import images
 from app.schemas.other import SearchOwner, SearchSort
 from app.services.automaton import (
     calculate_source_metadata,
 )
+from app.dao.base import BaseDAO
+from app.models.images import Images
+from app import config
+from app.schemas.images import ImageRequest, ImageResponse, ImagesResponse
 
 
 router = APIRouter(
     prefix="/automata",
-    tags=["automata"],
+    tags=["automata"]
 )
 
 
 @router.get(
     "/search_by_tags",
-    response_model=AutomatonSearchResponse,
+    response_model=AutomatonSearchResponse
 )
 async def search_automata(
     text: str | None = Query(
@@ -63,7 +74,7 @@ async def search_automata(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    page_size = 5
+    page_size = 4
     offset = (page - 1) * page_size
 
     owner_id = None
@@ -95,9 +106,14 @@ async def search_automata(
 @router.get(
     "/{automaton_id}",
     response_model=AutomatonResponse,
+    tags=['crud'],
+    description = """
+    **Получение автомата**
+    """
+    
 )
 async def get_automaton(
-    automaton_id: UUID,
+    automaton_id: UUID = Path(description="Получение **автомата** такое поле"),
     session: AsyncSession = Depends(get_session),
 ):
     dao = AutomatonDAO(session)
@@ -117,6 +133,7 @@ async def get_automaton(
 @router.get(
     "/{automaton_id}/source",
     response_model=AutomatonSourceResponse,
+    tags=['crud']
 )
 async def get_automaton_source(
     automaton_id: UUID,
@@ -143,6 +160,7 @@ async def get_automaton_source(
     "/create",
     response_model=AutomatonResponse,
     status_code=status.HTTP_201_CREATED,
+    tags=['crud']
 )
 async def create_automaton(
     data: AutomatonCreateRequest,
@@ -214,14 +232,104 @@ async def create_automaton(
         attribute_names=[
             "tags",
             "owner",
+            "preview_image",
+            "updated_at"
         ],
     )
 
     return automaton
 
 @router.patch(
+        "/image/{automaton_id}",
+        response_model=AutomatonResponse,
+        tags=['crud']
+        
+)
+async def update_automaton_image(
+    automaton_id:UUID, 
+    data: UploadFile,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session)):
+    #TODO Изображения бы сохранять во временное хранилище, чтобы по окончании транзакции перемещать в соответсвующую директорию? вдруг ошибка, а картинка есть
+    print("here is")
+    print(data)
+
+    automatonDao = AutomatonDAO(session=session)
+    # imagesDao = BaseDAO[Images](model=Images, session=session)
+
+    automaton:Automaton = await automatonDao.get_by_id(automaton_id)
+
+    if automaton is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Automaton not found",
+        )
+
+    
+    image:Images = Images(owner_id=current_user.id)
+    session.add(image)
+    await session.flush()
+    print("da image")
+    print(image, image.id)
+    try:
+        image_handler = images.ImageHandler(
+            loader=images.ImageLoader(),
+            square_converter=images.SquareCropConverter(),
+            converter=images.ImageConverter(),
+            validator=images.ImageValidator(
+                max_size=512,
+            ),
+            saver=images.ImageSaver(),)
+
+        image_handler.process_upload(
+            file=data,
+            output_path=Path(".").joinpath(config.settings.images_directory).joinpath(image.getFileName()),
+        )
+        
+        
+        automaton.preview_image = image.id
+        await session.refresh(automaton,
+                              ['images'])
+
+        
+        automaton.images = [image]
+
+        await session.commit()
+
+    except images.exceptions.ImageProcessingError as ex:
+        await session.rollback()
+
+        raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=str(ex)
+                )
+
+    except IntegrityError:
+        await session.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="integrity error",
+        )
+
+    await session.refresh(
+        automaton,
+        attribute_names=[
+            "tags",
+            "owner",
+            "preview_image",
+            "updated_at",
+            "images"
+        ],
+    )
+
+    return automaton
+
+
+@router.patch(
     "/{automaton_id}",
     response_model=AutomatonResponse,
+    tags=['crud']
 )
 async def update_automaton(
     automaton_id: UUID,
@@ -330,6 +438,8 @@ async def update_automaton(
         attribute_names=[
             "tags",
             "owner",
+            "updated_at",
+            "preview_image"
         ],
     )
 
@@ -339,6 +449,7 @@ async def update_automaton(
 @router.delete(
     "/{automaton_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    tags=['crud'],
 )
 async def delete_automaton(
     automaton_id: UUID,
@@ -369,3 +480,23 @@ async def delete_automaton(
     return Response(
         status_code=status.HTTP_204_NO_CONTENT,
     )
+
+@router.get(
+    "/images/",
+    response_model=ImagesResponse,
+    tags=['crud'],
+)
+async def get_automaton_images(
+    ids: list[UUID] = Query(...),
+    current_user:User = Depends(get_current_user),
+    session:AsyncSession = Depends(get_session)
+):
+    imagesDao = BaseDAO[Images](Images,session)
+    objects = []
+    for image_id in ids:
+        image = await imagesDao.get_by_id(image_id)
+        if image is None:
+            raise Exception(f"there is no some object, {image_id}")
+        objects.append(ImageResponse(id=image_id, image_url=f'/static/{image.getFileName()}'))
+
+    return ImagesResponse(automatas_data=objects)

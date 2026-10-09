@@ -49,17 +49,13 @@ export class SearchParser {
                 continue;
             }
 
-
+            
             if (token.startsWith("tag:")) {
-
                 const value =
                     token.slice("tag:".length);
-
-
                 if (value.length > 0) {
                     tagNames.push(value);
                 }
-
                 continue;
             }
 

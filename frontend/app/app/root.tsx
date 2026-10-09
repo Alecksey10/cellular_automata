@@ -30,7 +30,12 @@ export const links: RouteType.LinksFunction = () => [
   },
 ];
 
-export const AuthContext = createContext<AuthenticationState|null>(null);
+export interface UserContext {
+  authState: AuthenticationState,
+  syncUser: ()=>{}
+}
+
+export const AuthContext = createContext<UserContext|null>(null);
 
 
 

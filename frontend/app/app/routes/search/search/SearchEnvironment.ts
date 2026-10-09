@@ -123,7 +123,6 @@ export class SearchEnvironment
         return this.state;
     }
 
-
     async setInput(
         value: string,
     ): Promise<void> {
@@ -132,11 +131,8 @@ export class SearchEnvironment
 
 
         this.updateState({
-
             value,
-
             validation: null,
-
             suggestionsVisible:
                 this.state.focused,
         });
@@ -369,8 +365,8 @@ export class SearchEnvironment
 
             newInput =
                 input +
-                suggestion.value +
-                " ";
+                suggestion.value;// +
+                // " ";
 
         } else {
 
@@ -387,8 +383,8 @@ export class SearchEnvironment
 
 
             newInput =
-                parts.join(" ") +
-                " ";
+                parts.join(" ")// +
+                // " ";
         }
 
 

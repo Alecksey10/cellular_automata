@@ -15,12 +15,12 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
-import { AuthContext } from "~/root";
-import type { AuthenticationState } from "~/states/auth";
+import { AuthContext, type UserContext } from "~/root";
+import { authenticationManager, type AuthenticationState } from "~/states/auth";
 
 export default function RegisterPage()
 {
-  const authed:AuthenticationState|null = useContext(AuthContext)
+  const userContext:UserContext|null = useContext(AuthContext)
   console.log("authed is changed?")
   function handleRegistered(response:APIMethodDataResponse<RegisterResponse>) {
     if(!response.ok)
@@ -33,7 +33,7 @@ export default function RegisterPage()
     }
   }
 
-  function handleLogin(response:APIMethodDataResponse<User>) {
+  async function handleLogin(response:APIMethodDataResponse<User>) {
     if(!response.ok)
     {
       alert(`Ошибка ${response.error?.code} ${response.error?.detail}`)
@@ -41,10 +41,12 @@ export default function RegisterPage()
     else
     {
       alert(`Авторизация прошла успешно`)
+      await userContext?.syncUser()
+      // window.location.reload()
     }
   }
     console.log('auth page')
-    console.log(authed, authed?.isAuth)
+    console.log(userContext, userContext?.authState.isAuth)
     return <>
 
     <div className="flex min-h-screen items-center justify-center">
@@ -60,7 +62,7 @@ export default function RegisterPage()
                         <LoginComponent onTry={handleLogin} key='2'
                         />
                     </Tab>
-                    {authed?.isAuth?
+                    {userContext?.authState.isAuth?
                     <Tab title="Продолжить авторизованным">
                         <Button>Продолжить авторизованным</Button>
                     </Tab>:<div>не авторизован</div>}

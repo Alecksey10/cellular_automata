@@ -1,11 +1,11 @@
 import Sidebar from "~/components/ui/sidebar/Sidebar";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet } from "react-router";
-import { AuthContext } from "~/root";
+import { AuthContext, type UserContext } from "~/root";
 import { authenticationManager } from "~/states/auth";
 
 export default function AppLayout() {
-  const [partReducer, setReducer] = useState(authenticationManager.getState()); //по идее должен быть какой-нибудь прокси на состояния, чтобы я его редактировал
+  const [partReducer, setState] = useState(authenticationManager.getState()); //по идее должен быть какой-нибудь прокси на состояния, чтобы я его редактировал
   useEffect(()=>
   {
     console.log('start fetching')
@@ -15,7 +15,7 @@ export default function AppLayout() {
       await authenticationManager.synchronize();
       if(!ignore)
       {
-        setReducer(authenticationManager.getState())
+        setState(authenticationManager.getState())
         console.log("reducer auth updated", authenticationManager.getState())
       }
     }
@@ -57,7 +57,12 @@ export default function AppLayout() {
   
     
   return (
-    <AuthContext value={partReducer}>
+    <AuthContext value={{
+      authState:partReducer,
+      syncUser:async ()=>{
+        await authenticationManager.synchronize();
+        setState(authenticationManager.getState())}
+    } as UserContext}>
       <div style={{ display: "flex", minHeight: "100vh" }}>
         <Sidebar items={menuItems} />
 

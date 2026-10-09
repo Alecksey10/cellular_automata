@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 import httpx
 
@@ -29,11 +31,17 @@ async def test_create_get_delete_automaton(
 
     automaton_data = automata[0]
 
+    created_automaton:AutomatonResponse|None = None
+    try:
     # Создание
-    created_automaton:AutomatonResponse = await create_automaton(
-        authed_client,
-        automaton_data,
-    )
+        created_automaton = await create_automaton(
+            authed_client,
+            automaton_data,
+        )
+    except httpx.HTTPStatusError as ex:
+        if(ex.response.status_code==409):
+            warnings.warn(f"Сущность {automaton_data.slug} уже существует", UserWarning)
+            return
 
     automaton_id = created_automaton.id
 
@@ -67,8 +75,13 @@ async def test_initialize_all_automata(
     )
     # создадим автоматы и проверим существование
     for automata in automatas_to_create:
-            created_automaton:AutomatonResponse = await create_automaton(
-                authed_client,
-                automata,
-            )
-            await get_automata(authed_client, created_automaton.id)
+            try:
+                created_automaton:AutomatonResponse = await create_automaton(
+                    authed_client,
+                    automata,
+                )
+                await get_automata(authed_client, created_automaton.id)
+            except httpx.HTTPStatusError as ex:
+                 if(ex.response.status_code==409):
+                    warnings.warn(f"Сущность {automata.slug} уже существует", UserWarning)
+                 

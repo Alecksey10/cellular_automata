@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from app.models.collection import Collection
     from app.models.tag import Tag
     from app.models.user import User
+    from app.models.images import Images
 
 
 class Automaton(BaseModel):
@@ -98,6 +99,19 @@ class Automaton(BaseModel):
         secondary="collection_automata",
         back_populates="automata",
     )
+    
+    preview_image: Mapped[uuid.UUID | None] = mapped_column(
+            UUID(as_uuid=True),
+            ForeignKey("images.id", ondelete="SET NULL"),
+            nullable=True,
+            index=True,
+        )
+
+    images: Mapped[list["Images"]] = relationship(
+        "Images",
+        secondary="automaton_images",
+        back_populates="automata",
+    )
 
 automaton_tags = Table(
     "automaton_tags",
@@ -133,3 +147,23 @@ collection_automata = Table(
         primary_key=True,
     ),
 )
+
+automaton_images = Table(
+    "automaton_images",
+    Base.metadata,
+    Column(
+        "automaton_id",
+        UUID(as_uuid=True),
+        ForeignKey("automata.id", ondelete="CASCADE"),
+        primary_key=True,
+        unique=True,
+    ),
+    Column(
+        "image_id",
+        UUID(as_uuid=True),
+        ForeignKey("images.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    ),
+)
+

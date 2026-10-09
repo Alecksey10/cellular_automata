@@ -23,6 +23,7 @@ router = APIRouter(
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
+    tags=['crud'],
 )
 async def register(data:RegisterRequest):
     await asyncio.sleep(2)
@@ -61,7 +62,8 @@ from fastapi import Response
 @router.post("/login")
 async def login(
     response: Response,
-    data:LoginRequest
+    data:LoginRequest,
+
 ):
     print(f"Trying to login, {data.username}, {data.password}")
     async with session_scope() as session:
@@ -117,7 +119,8 @@ from app.dependencies.auth import get_current_user
 from app.models.user import User
 
 
-@router.get("/me")
+@router.get("/me",
+        tags=['crud'],)
 async def get_me(
     current_user: User = Depends(get_current_user),
 ):
