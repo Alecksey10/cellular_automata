@@ -25,11 +25,13 @@ async_session_factory = async_sessionmaker(
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    '''асинхронный генератор'''
     async with async_session_factory() as session:
         yield session
 
 @asynccontextmanager
 async def session_scope():
+    '''Вызываем где хотим, получаем сессию с менеджером'''
     async with async_session_factory() as session:
         try:
             yield session

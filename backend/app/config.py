@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     backend_api_host: str
     backend_api_port: int
     db_host: str
-    db_port: int
+    db_port_inner: int
+    db_port_outer:int
     db_user: str
     db_pass: str
     db_name: str
@@ -27,7 +28,7 @@ class Settings(BaseSettings):
         return (
             f"postgresql+asyncpg://"
             f"{self.db_user}:{self.db_pass}"
-            f"@{self.db_host}:{self.db_port}"
+            f"@{self.db_host}:{self.db_port_inner}"
             f"/{self.db_name}"
         )
 

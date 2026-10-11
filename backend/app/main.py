@@ -1,18 +1,29 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.routes import auth_router, automata_router, tags_router
 from fastapi.middleware.cors import CORSMiddleware
-from routes.api_tags import tags_metadata
+from app.routes.api_tags import tags_metadata
 from app.config import settings
-import db
+import app.db
 
 description = """
 Обзор клеточных автоматов, основная документация в репозитории
 """
 
-app = FastAPI(openapi_tags=tags_metadata, description=description)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # init
+    from app.models.consts import initConsts
+    await initConsts()
+    
+    yield
+    # Clean up
+    
+    
+app = FastAPI(openapi_tags=tags_metadata, description=description, lifespan=lifespan)
 
 
 @app.get("/")
@@ -25,7 +36,10 @@ origins = [
     "http://localhost:5173",
     "http://192.168.50.218:5173",
     "http://192.168.50.218:8000",
+    "http://192.168.50.218:3000",
     "http://192.168.50.218",
+    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(

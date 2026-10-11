@@ -1,0 +1,83 @@
+services:
+  db:
+    image: postgres:18
+    container_name: cellular_automata_db_test
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+
+    ports:
+      - "${DB_PORT_OUTER}:${DB_PORT_INNER}"
+
+    volumes:
+      # - postgres_data_test:/var/lib/postgresql
+      - ${BACKEND_DATA_DIRECTORY}/postgres_data:/var/lib/postgresql
+    networks:
+      - my-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cellular_automata_pgadmin_test
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+
+    ports:
+      - "${PGADMIN_PORT}:80"
+
+    depends_on:
+      - db
+
+    volumes:
+      # - pgadmin_data_test:/var/lib/pgadmin
+      - ${BACKEND_DATA_DIRECTORY}/pgadmin_data:/var/lib/pgadmin
+    
+    networks:
+      - my-network
+      
+  backend:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    container_name: my-fastapi_test
+
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - my-network
+    volumes:
+      - ${BACKEND_DATA_DIRECTORY}/images:/var/lib/backend/${IMAGES_DIRECTORY}
+      # - images_test:/var/lib/backend/${IMAGES_DIRECTORY}
+  frontend:
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    container_name: cellular_automata_frontend_test
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - backend
+    networks:
+      - my-network
+
+# volumes:
+#   postgres_data_test:
+#   pgadmin_data_test:
+#   images_test:
+
+networks:
+  my-network:
+    driver: bridge

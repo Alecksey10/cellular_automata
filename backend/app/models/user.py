@@ -8,6 +8,8 @@ from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.automaton import Automaton
+    from app.models.automaton import Automaton
+    from app.models.roles import Role
 
 
 class User(BaseModel):
@@ -41,4 +43,9 @@ class User(BaseModel):
     automata: Mapped[list["Automaton"]] = relationship(
         "Automaton",
         back_populates="owner",
+    )
+    roles: Mapped[list["Role"]] = relationship(
+        "Role",
+        secondary="user_roles",
+        back_populates="users",
     )

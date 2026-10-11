@@ -1,7 +1,7 @@
 # заполнение тестовыми данными
 
 from app.dao.base import BaseDAO
-from app.db.seeds.seed_1.utils import readAllData
+from app.db.test_seeds.seed_1.utils import readAllData
 from app.db.session import session_scope
 from app.models.automaton import Automaton
 from app.models.tag import Tag

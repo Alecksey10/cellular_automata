@@ -19,8 +19,6 @@ class Base(DeclarativeBase):
         naming_convention=convention
     )
     pass
-
-
 class BaseModel(Base):
     __abstract__ = True
 

@@ -1,213 +1,213 @@
-import type {
-    SimulationConfig,
-    SimulationProgram,
-    RenderData,
-} from "~/../client_apis/v0.1";
+// import type {
+//     SimulationConfig,
+//     SimulationProgram,
+//     RenderData,
+// } from "~/../client_apis/v0.1";
 
-export interface RuntimeConfig {
-    stepsPerRender: number;
-}
+// export interface RuntimeConfig {
+//     stepsPerRender: number;
+// }
 
-export interface SimulationRuntimeOptions {
-    program: SimulationProgram;
-    config?: SimulationConfig;
-    runtime?: Partial<RuntimeConfig>;
-    onRender?: (data: RenderData) => void;
-    onIterate?: (iteration:number) => void;
-}
+// export interface SimulationRuntimeOptions {
+//     program: SimulationProgram;
+//     config?: SimulationConfig;
+//     runtime?: Partial<RuntimeConfig>;
+//     onRender?: (data: RenderData) => void;
+//     onIterate?: (iteration:number) => void;
+// }
 
-export class SimulationRuntime {
-    private readonly program: SimulationProgram;
+// export class SimulationRuntime {
+//     private readonly program: SimulationProgram;
 
-    private config: SimulationConfig;
+//     private config: SimulationConfig;
 
-    private readonly runtimeConfig: RuntimeConfig;
+//     private readonly runtimeConfig: RuntimeConfig;
 
-    private readonly onRender?: (data: RenderData) => void;
-    private readonly onIterate?: (iteration:number) => void;    
+//     private readonly onRender?: (data: RenderData) => void;
+//     private readonly onIterate?: (iteration:number) => void;    
 
-    private iteration = 0;
-    private elapsedTime = 0;
+//     private iteration = 0;
+//     private elapsedTime = 0;
 
-    private lastTime = 0;
+//     private lastTime = 0;
 
-    private running = false;
-    private timer: number | null = null;
+//     private running = false;
+//     private timer: number | null = null;
 
-    constructor(options: SimulationRuntimeOptions) {
-        this.program = options.program;
+//     constructor(options: SimulationRuntimeOptions) {
+//         this.program = options.program;
 
-        this.config = {
-            ...this.program.getDefaultConfig(),
-            ...options.config,
-        };
+//         this.config = {
+//             ...this.program.getDefaultConfig(),
+//             ...options.config,
+//         };
 
-        this.runtimeConfig = {
-            stepsPerRender: 1,
-            ...options.runtime,
-        };
+//         this.runtimeConfig = {
+//             stepsPerRender: 1,
+//             ...options.runtime,
+//         };
 
-        this.onRender = options.onRender;
-        this.onIterate = options.onIterate;
+//         this.onRender = options.onRender;
+//         this.onIterate = options.onIterate;
 
-        this.init();
-    }
+//         this.init();
+//     }
 
-    getProgram(): SimulationProgram {
-        return this.program;
-    }
+//     getProgram(): SimulationProgram {
+//         return this.program;
+//     }
 
-    getConfig(): SimulationConfig {
-        return {
-            ...this.config,
-        };
-    }
+//     getConfig(): SimulationConfig {
+//         return {
+//             ...this.config,
+//         };
+//     }
 
-    getIteration(): number {
-        return this.iteration;
-    }
+//     getIteration(): number {
+//         return this.iteration;
+//     }
 
-    getElapsedTime(): number {
-        return this.elapsedTime;
-    }
+//     getElapsedTime(): number {
+//         return this.elapsedTime;
+//     }
 
-    init(config?: SimulationConfig): void {
-        this.pause();
+//     init(config?: SimulationConfig): void {
+//         this.pause();
 
-        if (config) {
-            this.config = {
-                ...this.config,
-                ...config,
-            };
-        }
+//         if (config) {
+//             this.config = {
+//                 ...this.config,
+//                 ...config,
+//             };
+//         }
 
-        this.iteration = 0;
-        this.elapsedTime = 0;
-        this.lastTime = performance.now();
+//         this.iteration = 0;
+//         this.elapsedTime = 0;
+//         this.lastTime = performance.now();
 
-        this.program.init({
-            config: this.config,
-        });
+//         this.program.init({
+//             config: this.config,
+//         });
 
-        this.render();
-    }
+//         this.render();
+//     }
 
-    start(): void {
-        if (this.running) {
-            return;
-        }
+//     start(): void {
+//         if (this.running) {
+//             return;
+//         }
 
-        this.running = true;
+//         this.running = true;
 
-        this.program.resume({
-            iteration: this.iteration,
-            elapsedTime: this.elapsedTime,
-        });
+//         this.program.resume({
+//             iteration: this.iteration,
+//             elapsedTime: this.elapsedTime,
+//         });
 
-        this.lastTime = performance.now();
+//         this.lastTime = performance.now();
 
-        this.schedule();
-    }
+//         this.schedule();
+//     }
 
-    pause(): void {
-        if (!this.running) {
-            return;
-        }
+//     pause(): void {
+//         if (!this.running) {
+//             return;
+//         }
 
-        this.running = false;
+//         this.running = false;
 
-        if (this.timer !== null) {
-            clearTimeout(this.timer);
-            this.timer = null;
-        }
+//         if (this.timer !== null) {
+//             clearTimeout(this.timer);
+//             this.timer = null;
+//         }
 
-        this.program.pause({
-            iteration: this.iteration,
-            elapsedTime: this.elapsedTime,
-        });
-    }
+//         this.program.pause({
+//             iteration: this.iteration,
+//             elapsedTime: this.elapsedTime,
+//         });
+//     }
 
-    step(): void {
-        const now = performance.now();
+//     step(): void {
+//         const now = performance.now();
 
-        const deltaTime = now - this.lastTime;
+//         const deltaTime = now - this.lastTime;
 
-        this.lastTime = now;
-        this.elapsedTime += deltaTime;
+//         this.lastTime = now;
+//         this.elapsedTime += deltaTime;
 
-        this.iteration++;
+//         this.iteration++;
 
-        this.program.step({
-            iteration: this.iteration,
-            deltaTime,
-            elapsedTime: this.elapsedTime,
-        });
+//         this.program.step({
+//             iteration: this.iteration,
+//             deltaTime,
+//             elapsedTime: this.elapsedTime,
+//         });
 
-        this.render();
-        this.onIterate?.(this.iteration);
-    }
+//         this.render();
+//         this.onIterate?.(this.iteration);
+//     }
 
-    configure(config: SimulationConfig): void {
-        this.config = {
-            ...this.config,
-            ...config,
-        };
+//     configure(config: SimulationConfig): void {
+//         this.config = {
+//             ...this.config,
+//             ...config,
+//         };
 
-        this.program.configure(config, {
-            iteration: this.iteration,
-            elapsedTime: this.elapsedTime,
-        });
+//         this.program.configure(config, {
+//             iteration: this.iteration,
+//             elapsedTime: this.elapsedTime,
+//         });
 
-        this.render();
-    }
+//         this.render();
+//     }
 
-    render(): RenderData {
-        const data = this.program.render();
+//     render(): RenderData {
+//         const data = this.program.render();
 
-        this.onRender?.(data);
+//         this.onRender?.(data);
 
-        return data;
-    }
+//         return data;
+//     }
 
-    dispose(): void {
-        this.pause();
-        this.program.dispose();
-    }
+//     dispose(): void {
+//         this.pause();
+//         this.program.dispose();
+//     }
 
-    private schedule(): void {
-        this.timer = window.setTimeout(
-            () => this.tick(),
-            16,
-        );
-    }
+//     private schedule(): void {
+//         this.timer = window.setTimeout(
+//             () => this.tick(),
+//             16,
+//         );
+//     }
 
-    private tick(): void {
-        if (!this.running) {
-            return;
-        }
+//     private tick(): void {
+//         if (!this.running) {
+//             return;
+//         }
 
-        const now = performance.now();
-        const deltaTime = now - this.lastTime;
+//         const now = performance.now();
+//         const deltaTime = now - this.lastTime;
 
-        this.lastTime = now;
-        this.elapsedTime += deltaTime;
+//         this.lastTime = now;
+//         this.elapsedTime += deltaTime;
 
-        for (
-            let i = 0;
-            i < this.runtimeConfig.stepsPerRender;
-            i++
-        ) {
-            this.iteration++;
+//         for (
+//             let i = 0;
+//             i < this.runtimeConfig.stepsPerRender;
+//             i++
+//         ) {
+//             this.iteration++;
 
-            this.program.step({
-                iteration: this.iteration,
-                deltaTime,
-                elapsedTime: this.elapsedTime,
-            });
-        }
+//             this.program.step({
+//                 iteration: this.iteration,
+//                 deltaTime,
+//                 elapsedTime: this.elapsedTime,
+//             });
+//         }
 
-        this.render();
-        this.onIterate?.(this.iteration);
-        this.schedule();
-    }
-}
+//         this.render();
+//         this.onIterate?.(this.iteration);
+//         this.schedule();
+//     }
+// }

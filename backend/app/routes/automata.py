@@ -13,6 +13,7 @@ from fastapi import (
     status,
 )
 from pydantic import Field
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +22,8 @@ from app.dao.tag import TagDAO
 from app.db.session import get_session, session_scope
 from app.dependencies.auth import get_current_user
 from app.models.automaton import Automaton, automaton_images
+from app.models.consts.roles import RolesIds
+from app.models.roles import UserRole
 from app.models.user import User
 from app.schemas.automaton import (
     AutomatonCreateRequest,
@@ -39,7 +42,8 @@ from app.dao.base import BaseDAO
 from app.models.images import Images
 from app import config
 from app.schemas.images import ImageRequest, ImageResponse, ImagesResponse
-
+from app.dao.user import UserDAO
+import pathlib
 
 router = APIRouter(
     prefix="/automata",
@@ -74,7 +78,7 @@ async def search_automata(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    page_size = 4
+    page_size = 12
     offset = (page - 1) * page_size
 
     owner_id = None
@@ -255,9 +259,16 @@ async def update_automaton_image(
     print(data)
 
     automatonDao = AutomatonDAO(session=session)
-    # imagesDao = BaseDAO[Images](model=Images, session=session)
 
+    RolesIds.getAdminRoleId()
+    user_admin = (await session.execute(select(UserRole).where(User.id==current_user.id and UserRole.role_id==admin_role))).scalar_one_or_none()
     automaton:Automaton = await automatonDao.get_by_id(automaton_id)
+    
+    if automaton.owner_id != current_user.id and not user_admin:
+        raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You are not the owner of this automaton",
+                )
 
     if automaton is None:
         raise HTTPException(
@@ -283,7 +294,7 @@ async def update_automaton_image(
 
         image_handler.process_upload(
             file=data,
-            output_path=Path(".").joinpath(config.settings.images_directory).joinpath(image.getFileName()),
+            output_path=pathlib.Path(".").joinpath(config.settings.images_directory).joinpath(image.getFileName()),
         )
         
         
@@ -329,7 +340,11 @@ async def update_automaton_image(
 @router.patch(
     "/{automaton_id}",
     response_model=AutomatonResponse,
-    tags=['crud']
+    tags=['crud'],
+    description='''
+    Обновить автомат
+    Обновлять автомат может как пользователь, так и администратор и прочие.
+    '''
 )
 async def update_automaton(
     automaton_id: UUID,
@@ -337,8 +352,12 @@ async def update_automaton(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
+    
     dao = AutomatonDAO(session)
 
+    admin_role = RolesIds.getAdminRoleId()
+    user_admin = (await session.execute(select(UserRole).where(User.id==current_user.id and UserRole.role_id==admin_role))).scalar_one_or_none()
+    
     automaton = await dao.get_by_id(
         automaton_id,
     )
@@ -349,7 +368,8 @@ async def update_automaton(
             detail="Automaton not found",
         )
 
-    if automaton.owner_id != current_user.id:
+    if automaton.owner_id != current_user.id and not user_admin:
+                
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not the owner of this automaton",

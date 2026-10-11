@@ -1,45 +1,45 @@
-export type ConfigValue =
-    | string
-    | number
-    | boolean
-    | null;
+// export type ConfigValue =
+//     | string
+//     | number
+//     | boolean
+//     | null;
 
-export type SimulationConfig =
-    Record<string, ConfigValue>;
+// export type SimulationConfig =
+//     Record<string, ConfigValue>;
 
-export type ConfigFieldType =
-    | "string"
-    | "number"
-    | "integer"
-    | "boolean"
-    | "select";
+// export type ConfigFieldType =
+//     | "string"
+//     | "number"
+//     | "integer"
+//     | "boolean"
+//     | "select";
 
-export interface ConfigOption {
-    value: ConfigValue;
-    label: string;
-}
+// export interface ConfigOption {
+//     value: ConfigValue;
+//     label: string;
+// }
 
-export interface ConfigField {
-    key: string;
-    type: ConfigFieldType;
+// export interface ConfigField {
+//     key: string;
+//     type: ConfigFieldType;
 
-    label?: string;
-    description?: string;
+//     label?: string;
+//     description?: string;
 
-    defaultValue: ConfigValue;
+//     defaultValue: ConfigValue;
 
-    min?: number;
-    max?: number;
-    step?: number;
+//     min?: number;
+//     max?: number;
+//     step?: number;
 
-    options?: ConfigOption[];
+//     options?: ConfigOption[];
 
-    /**
-     * Можно ли изменить параметр без переинициализации автомата.
-     */
-    hotReload: boolean;
-}
+//     /**
+//      * Можно ли изменить параметр без переинициализации автомата.
+//      */
+//     hotReload: boolean;
+// }
 
-export interface ConfigSchema {
-    fields: ConfigField[];
-}
+// export interface ConfigSchema {
+//     fields: ConfigField[];
+// }

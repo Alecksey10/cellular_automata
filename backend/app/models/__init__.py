@@ -9,7 +9,7 @@ from app.models.collection import Collection
 from app.models.tag import Tag
 from app.models.user import User
 from app.models.images import Images
-
+from app.models.roles import Role, UserRole
 __all__ = [
     "Base",
     "BaseModel",
@@ -21,4 +21,6 @@ __all__ = [
     "automaton_tags",
     "collection_automata",
     "automaton_images",
+    "Role",
+    "UserRole"
 ]
