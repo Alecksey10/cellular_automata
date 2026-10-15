@@ -1,7 +1,7 @@
 import { APIMethodBase } from "../APIMethodBase";
 import { APIMethodData } from "../APIMethodData";
 import { APIMethodDataResponse } from "../APIMethodDataResponse";
-import { AUTOMATA_ENDPOINTS } from "./enpoints";
+import { AUTOMATA_ENDPOINTS } from "./endpoints";
 import type {
     AutomatonCreateRequest,
     AutomatonCreateResponse,

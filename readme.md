@@ -1,8 +1,24 @@
-#
+# Обзор клеточных автоматов
+
+Веб-приложение для создания, поиска и запуска клеточных автоматов: авторы делятся автоматами (исходник на TypeScript), остальные запускают их в браузере.
 
 ## Документация
 
-Исходная точка ![документации](./frontend/docs/docs.md) лежит во фронтенде, пока что
+* [Запуск проекта](./docs/run.md) — docker compose и локальная разработка, тесты
+* [Архитектура](./docs/architecture.md) — слои backend/frontend, REST API, рантайм автоматов
+* [Конфигурация](./docs/configuration.md) — переменные окружения, порты, CORS
+* Итерации и заметки фронтенда — [frontend/docs/docs.md](./frontend/docs/docs.md)
+
+## Запуск через docker (кратко)
+
+Подробности и локальный вариант — в [docs/run.md](./docs/run.md).
+
+1. Поднять сервисы: `docker compose up --build -d`
+2. Миграции и первичные данные (роли) выполняются автоматически в entrypoint backend
+3. Каталоги данных и права для контейнеров:
+   1. `mkdir -p datas/backend/postgres_data datas/backend/pgadmin_data datas/backend/images`
+   2. `sudo chown -R 999:999 ./datas/backend/postgres_data`
+   3. `sudo chown -R 5050:5050 ./datas/backend/pgadmin_data`
 
 ## Планы
 
@@ -15,12 +31,8 @@
 
 ## Запуск проекта через docker
 
-1) Надо поднять сервисы через docker-compose
-2) заполнить БД первичными данными (seeds)
-3) прокинуть путь к картинкам
-   1) sudo chown -R 999:999 ./datas/postgres_test (директории должны иметь права docker)
-   2) sudo chown -R 5050:5050 ./datas/pgadmin_test
+См. раздел выше и [docs/run.md](./docs/run.md).
 
 ## TODO
 
-* плохая работа с изображениями, могут остаться при некорректной транзакции. Не удаляются никогда
+* При удалении автомата его изображения на диске не удаляются (при откате транзакции — уже удаляются)

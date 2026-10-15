@@ -11,7 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY alembic/ alembic/
 COPY alembic.ini alembic.ini
 COPY app/ app/
-COPY Dockered.env .env
+# Конфигурация подаётся из docker-compose через env_file (/.env в корне
+# репозитория); образ не запекает переменные окружения внутри.
 COPY entrypoint.sh /entrypoint.sh
 
 EXPOSE 8000

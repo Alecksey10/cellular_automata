@@ -65,7 +65,6 @@ async def login(
     data:LoginRequest,
 
 ):
-    print(f"Trying to login, {data.username}, {data.password}")
     async with session_scope() as session:
         dao = UserDAO(session)
 

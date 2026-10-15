@@ -3,10 +3,15 @@ export interface ApiConfig {
     staticURL: string;
 }
 
+// Базовый адрес API задаётся через переменную окружения
+// VITE_API_BASE_URL (см. .env.example). Локально по умолчанию — localhost.
+const defaultBaseUrl = "http://localhost:8000";
+
+const baseUrl: string =
+    import.meta.env.VITE_API_BASE_URL ?? defaultBaseUrl;
+
 export const apiConfig: ApiConfig = {
-    baseUrl: "http://192.168.50.218:8000",
-    // baseUrl: "http://localhost:8000",
+    baseUrl,
     //всякая статиска, пока картинки.
-    // staticURL: "http://localhost:8000",
-    staticURL: "http://192.168.50.218:8000"
+    staticURL: baseUrl,
 };

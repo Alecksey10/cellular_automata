@@ -2,7 +2,7 @@ import { APIMethodCreateAutomata } from "./APIMethodCreateAutomata";
 import { APIMethodGetAutomataByID } from "./APIMethodGetAutomataByID";
 import { APIMethodGetAutomataSourceByID } from "./APIMethodGetAutomataByID";
 import { APIMethodGetAutomatasImages } from "./APIMethodGetAutomatasImages";
-import { APIMethodSearchAtumatas } from "./APIMethodSearchAtumatas";
+import { APIMethodSearchAutomatas } from "./APIMethodSearchAutomatas";
 import { APIMethodUpdateAutomata } from "./APIMethodUpdateAutomata";
 import { APIMethodUpdateAutomataImage } from "./APIMethodUpdateAutomataImage";
 
@@ -25,5 +25,5 @@ export const automataAPI = {
         new APIMethodUpdateAutomataImage(),
 
     searchAutomata:
-        new APIMethodSearchAtumatas(),
+        new APIMethodSearchAutomatas(),
 };

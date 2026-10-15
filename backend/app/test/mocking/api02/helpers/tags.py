@@ -44,7 +44,7 @@ async def reset_tags(
     # Создаём нужные теги
     for tag_name in tags:
         response = await client.post(
-            "/tags/create",
+            "/tags",
             json={
                 "name": tag_name,
             },

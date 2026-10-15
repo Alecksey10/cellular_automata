@@ -3,7 +3,12 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.routes import auth_router, automata_router, tags_router
+from app.routes import (
+    auth_router,
+    automata_images_router,
+    automata_router,
+    tags_router,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.api_tags import tags_metadata
 from app.config import settings
@@ -30,21 +35,9 @@ app = FastAPI(openapi_tags=tags_metadata, description=description, lifespan=life
 async def root():
     return {"message": "Hello World"}
 
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:5173",
-    "http://192.168.50.218:5173",
-    "http://192.168.50.218:8000",
-    "http://192.168.50.218:3000",
-    "http://192.168.50.218",
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,6 +45,9 @@ app.add_middleware(
 
 
 app.include_router(auth_router)
+# automata_images_router раньше automata_router: иначе
+# GET /automata/images перехватывается GET /automata/{automaton_id}.
+app.include_router(automata_images_router)
 app.include_router(automata_router)
 app.include_router(tags_router)
 

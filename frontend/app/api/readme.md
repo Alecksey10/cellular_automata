@@ -308,10 +308,17 @@ APIMethodDataResponse<User>
 ```
 export interface ApiConfig {
 baseUrl: string;
+staticURL: string;
 }
 
+const defaultBaseUrl = "http://localhost:8000";
+
+const baseUrl: string =
+import.meta.env.VITE_API_BASE_URL ?? defaultBaseUrl;
+
 export const apiConfig: ApiConfig = {
-baseUrl: "http://localhost:8000",
+baseUrl,
+staticURL: baseUrl,
 };
 ```
 
@@ -329,11 +336,10 @@ this.request("/auth/me")
 http://localhost:8000/auth/me
 ```
 
-Чтобы изменить адрес API, достаточно изменить:
-
-```
-apiConfig.baseUrl
-```
+Чтобы изменить адрес API, задайте переменную окружения
+`VITE_API_BASE_URL` (файл `.env` рядом с `package.json`,
+шаблон — `.env.example`; подробности — `docs/configuration.md`).
+Локально по умолчанию используется `http://localhost:8000`.
 
 ---
 

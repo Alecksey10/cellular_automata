@@ -29,7 +29,7 @@ async def create_automaton(
     automaton_data: AutomatonCreateRequest,
 )->AutomatonResponse:
     response = await client.post(
-        "/automata/create",
+        "/automata",
         json=automaton_data.model_dump(mode="json"),
     )
     response.raise_for_status()

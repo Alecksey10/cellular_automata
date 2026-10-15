@@ -1,13 +1,13 @@
 import { APIMethodBase } from "../APIMethodBase";
 import { APIMethodDataResponse } from "../APIMethodDataResponse";
-import { AUTOMATA_ENDPOINTS } from "./enpoints";
+import { AUTOMATA_ENDPOINTS } from "./endpoints";
 import type {
     AutomatonSearchResponse,
     AutomatonSearchRequest,
 } from "./types";
 
 
-export class APIMethodSearchAtumatas
+export class APIMethodSearchAutomatas
     extends APIMethodBase<APIMethodDataResponse<AutomatonSearchResponse>>
 {
     async execute(

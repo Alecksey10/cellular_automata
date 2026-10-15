@@ -39,7 +39,7 @@ async def get_tags(
         )
         for tag, count in rows
     ]
-    print(result)
+
     return result
 
 
@@ -69,7 +69,7 @@ async def get_automata_by_tag(
 
 
 @router.post(
-    "/create",
+    "",
     response_model=TagShortResponse,
     status_code=status.HTTP_201_CREATED,
     tags=['crud'],

@@ -2,7 +2,7 @@
 import { APIMethodBase } from "../APIMethodBase";
 import { APIMethodDataResponse } from "../APIMethodDataResponse";
 import { APIMethodResponseBase } from "../APIMethodResponseBase";
-import { AUTOMATA_ENDPOINTS } from "./enpoints";
+import { AUTOMATA_ENDPOINTS } from "./endpoints";
 import type { AutomatonSourceCode, AutomatonGetResponse } from "./types";
 
 
