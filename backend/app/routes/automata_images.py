@@ -20,6 +20,8 @@ from app.db.session import get_session
 from app.dependencies.auth import get_current_user
 from app.dependencies.permissions import ensure_owner_or_admin
 from app.models.images import Images
+from app.models.automaton import automaton_images as automaton_images_table
+from sqlalchemy import insert
 from app.models.user import User
 from app.schemas.automaton import AutomatonResponse
 from app.schemas.images import ImageResponse, ImagesResponse
@@ -94,6 +96,17 @@ async def update_automaton_image(
         )
 
         automaton.preview_image = image.id
+
+        # Не триггерим ленивую загрузку коллекции `images` —
+        # напрямую вставляем запись в связующую таблицу.
+        # await session.execute(
+        #     automaton_images_table.insert().values(
+        #         automaton_id=automaton.id,
+        #         image_id=image.id,
+        #     )
+        # )
+        # Ленивая загрузка
+        await session.refresh(automaton, attribute_names=["images"])
         automaton.images = [image]
 
         await session.commit()

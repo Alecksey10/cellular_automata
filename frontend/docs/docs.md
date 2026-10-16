@@ -10,6 +10,10 @@
 
 * ![Научные статьи](./sources/readme.md)
 
+https://cell-auto.com
+https://www.heatonresearch.com/mergelife/ml-gallery.html
+
+
 ## Итерации
 
 ![Итерации](./Итерации/Iterations.md)

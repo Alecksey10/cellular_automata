@@ -56,6 +56,11 @@ docker compose --profile backup run --rm backup restore 20261016T120000Z_ab12cd3
 docker compose --profile backup run --rm backup restore 20261016T120000Z_ab12cd34 --images-only --replace-images
 ```
 
+### ручное восстановление
+* копирую из корня проекта дамп данных (в случае ручного восстановления...) в ./datas/backend/pgadmin_data/storage/.../...
+* дропаю БД, пересоздаю, делаю restore данных. Костыль...
+
+
 ## Ограничения текущей версии
 
 - Бэкап создаётся для одной базы и одного каталога изображений, заданных окружением.

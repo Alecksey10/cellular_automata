@@ -57,7 +57,7 @@ services:
       - my-network
     volumes:
       # Каталог совпадает с IMAGES_DIRECTORY относительно WORKDIR (/app)
-      - ./backend/${IMAGES_DIRECTORY}/images:/app/${IMAGES_DIRECTORY}
+      - ./backend/app/images:/app/app/images
       # - images_test:/app/${IMAGES_DIRECTORY}
 
   backup:
@@ -76,7 +76,7 @@ services:
       - my-network
     volumes:
       - ./backups:/backups
-      - ./backend/${IMAGES_DIRECTORY}/images:/app/${IMAGES_DIRECTORY}
+      - ./backend/app/images:/app/app/images
 
   frontend:
     build:
@@ -91,6 +91,8 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
+      
+    
     depends_on:
       - backend
     networks:
