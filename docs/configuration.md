@@ -16,8 +16,8 @@
 |---|---|---|
 | `BACKEND_API_HOST`, `BACKEND_API_PORT` | оба env бэкенда | Хост/порт бэкенда (используются, например, в базовом URL тестов) |
 | `DB_HOST` | оба env бэкенда | `localhost` локально, имя сервиса `db` в docker |
-| `DB_PORT_OUTER` | оба env бэкенда | Порт PostgreSQL на хосту (`8080`) |
-| `DB_PORT_INNER` | оба env бэкенда | Порт PostgreSQL внутри сети (`5432`); входит в `database_url` |
+| `DB_PORT_INNER` | оба env бэкенда | Порт PostgreSQL внутри сети (`5432`); используется для адреса сервиса Compose |
+| `DB_PORT_OUTER` | оба env бэкенда | Порт опубликованного PostgreSQL на хосте (`8080`); используется, когда `DB_HOST` — localhost |
 | `DB_USER`, `DB_PASS`, `DB_NAME` | оба env бэкенда | Учётные данные и имя БД |
 | `PGADMIN_EMAIL`, `PGADMIN_PASSWORD`, `PGADMIN_PORT` | `/.env` | pgAdmin 4 (порт на хосту `8081`) |
 | `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES` | оба env бэкенда | Подпись и срок жизни JWT (`HS256`, 1440 мин) |
@@ -25,6 +25,7 @@
 | `BACKEND_DATA_DIRECTORY` | `/.env` | Базовый каталог bind-mount данных compose (postgres, pgadmin, картинки) |
 | `CORS_ORIGINS` | оба env бэкенда | Разрешённые CORS-источники через запятую (по умолчанию `http://localhost:3000,5173,8000`) |
 | `VITE_API_BASE_URL` | `/.env` (сборка в docker) или `frontend/app/.env` (локально) | Базовый адрес backend API, зашивается в клиентский бандл; по умолчанию `http://localhost:8000` |
+| `BACKUP_UID`, `BACKUP_GID` | `/.env` (необязательно) | UID/GID владельца файлов `./backups` на хосте; по умолчанию `1000:1000` |
 
 ## Доступ с другой машины
 

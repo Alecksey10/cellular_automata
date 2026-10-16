@@ -7,6 +7,7 @@
 * [Запуск проекта](./docs/run.md) — docker compose и локальная разработка, тесты
 * [Архитектура](./docs/architecture.md) — слои backend/frontend, REST API, рантайм автоматов
 * [Конфигурация](./docs/configuration.md) — переменные окружения, порты, CORS
+* [Резервные копии](./docs/backup.md) — создание, проверка и восстановление PostgreSQL и изображений
 * Итерации и заметки фронтенда — [frontend/docs/docs.md](./frontend/docs/docs.md)
 
 ## Запуск через docker (кратко)

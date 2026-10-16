@@ -59,6 +59,25 @@ services:
       # Каталог совпадает с IMAGES_DIRECTORY относительно WORKDIR (/app)
       - ./backend/${IMAGES_DIRECTORY}/images:/app/${IMAGES_DIRECTORY}
       # - images_test:/app/${IMAGES_DIRECTORY}
+
+  backup:
+    build:
+      context: ./backend
+      dockerfile: docker/Backup.Dockerfile
+    container_name: cellular_automata_backup
+    user: "${BACKUP_UID:-1000}:${BACKUP_GID:-1000}"
+    profiles: [backup]
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - my-network
+    volumes:
+      - ./backups:/backups
+      - ./backend/${IMAGES_DIRECTORY}/images:/app/${IMAGES_DIRECTORY}
+
   frontend:
     build:
       context: ./frontend/app

@@ -1,4 +1,6 @@
 **/__pycache__/
+backups/*
+!backups/.gitkeep
 backend/venv/*
 
 datas/

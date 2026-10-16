@@ -40,10 +40,16 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self) -> str:
+        host = self.db_host.lower()
+        port = (
+            self.db_port_outer
+            if host in {"localhost", "127.0.0.1", "::1"}
+            else self.db_port_inner
+        )
         return (
             f"postgresql+asyncpg://"
             f"{self.db_user}:{self.db_pass}"
-            f"@{self.db_host}:{self.db_port_inner}"
+            f"@{self.db_host}:{port}"
             f"/{self.db_name}"
         )
 
